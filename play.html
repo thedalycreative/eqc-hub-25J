@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Riz Quiz | 25G</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦘</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script>
+        tailwind.config={theme:{extend:{
+            colors:{brand:{dark:'#0f172a',deeper:'#020617',mid:'#1e293b',accent:'#10b981',accent2:'#06b6d4',warn:'#f59e0b',purple:'#8b5cf6',pink:'#ec4899'}},
+            fontFamily:{sans:['Inter','system-ui','sans-serif'],mono:['JetBrains Mono','monospace']}
+        }}}
+    </script>
+    <style>
+        body{font-family:'Inter',system-ui,sans-serif;}
+        .grad-warm{background:linear-gradient(135deg,#fbbf24,#f59e0b,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .slide-up{animation:su .4s ease-out;}
+        @keyframes su{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .bounce-in{animation:bi .6s cubic-bezier(.68,-.55,.265,1.55);}
+        @keyframes bi{0%{transform:scale(0)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+        .timer-ring{transition:stroke-dashoffset 1s linear;}
+        .opt-btn{transition:all .15s;}
+        .opt-btn:active{transform:scale(0.95);}
+        .opt-btn.correct{background:linear-gradient(135deg,rgba(16,185,129,.3),rgba(6,182,212,.3))!important;border-color:#10b981!important;color:#34d399!important;}
+        .opt-btn.wrong{background:rgba(239,68,68,.15)!important;border-color:#ef4444!important;color:#f87171!important;opacity:.6;}
+        .opt-btn.reveal-correct{border-color:#10b981!important;box-shadow:0 0 12px rgba(16,185,129,.3);}
+    </style>
+</head>
+<body class="bg-brand-deeper text-white min-h-screen flex flex-col items-center justify-center p-4">
+
+<!-- ═══ SCREEN: NAME SELECT ═══ -->
+<div id="screen-name" class="w-full max-w-sm slide-up">
+    <div class="text-center mb-6">
+        <div class="text-3xl mb-2"><i class="bi bi-lightning-charge-fill text-amber-400"></i></div>
+        <h1 class="text-2xl font-black"><span class="grad-warm">Riz Quiz</span></h1>
+        <p class="text-sm text-white/40 mt-1">Intake 25G · Select your name to join</p>
+    </div>
+    <div class="space-y-2" id="name-buttons"></div>
+</div>
+
+<!-- ═══ SCREEN: WAITING IN LOBBY ═══ -->
+<div id="screen-lobby" class="w-full max-w-sm hidden text-center">
+    <div class="slide-up">
+        <div class="text-4xl mb-3"><i class="bi bi-people-fill text-brand-accent"></i></div>
+        <h2 class="text-xl font-bold text-white/80 mb-1">You're in, <span id="lobby-name" class="text-brand-accent"></span>!</h2>
+        <p class="text-sm text-white/40 mb-4">Waiting for Tim to start the quiz...</p>
+        <div class="flex flex-wrap gap-2 justify-center mb-4" id="lobby-others"></div>
+        <div class="text-xs text-white/20 animate-pulse">Sit tight — questions incoming</div>
+    </div>
+</div>
+
+<!-- ═══ SCREEN: QUESTION ═══ -->
+<div id="screen-question" class="w-full max-w-md hidden">
+    <div class="slide-up">
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-bold text-white/30 uppercase" id="mob-q-counter"></span>
+            <span class="text-sm text-white/20" id="mob-q-cat"></span>
+        </div>
+        <div class="flex justify-center mb-3">
+            <svg width="80" height="80" id="timer-svg">
+                <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="6"/>
+                <circle cx="40" cy="40" r="34" fill="none" stroke="#10b981" stroke-width="6" stroke-linecap="round"
+                    stroke-dasharray="213.6" stroke-dashoffset="0" transform="rotate(-90 40 40)" id="timer-circle" class="timer-ring"/>
+                <text x="40" y="46" text-anchor="middle" fill="white" font-size="22" font-weight="900" font-family="JetBrains Mono" id="timer-text">15</text>
+            </svg>
+        </div>
+        <h2 id="mob-q-text" class="text-xl font-bold text-center mb-5 leading-snug"></h2>
+        <div class="space-y-2.5" id="mob-q-options"></div>
+        <div class="text-center mt-4 text-xs text-white/20" id="mob-answered-msg"></div>
+    </div>
+</div>
+
+<!-- ═══ SCREEN: WAITING FOR SCORES ═══ -->
+<div id="screen-wait-score" class="w-full max-w-sm hidden text-center">
+    <div class="bounce-in">
+        <div class="text-4xl mb-3" id="wait-icon">
+            <i class="bi bi-hourglass-split text-amber-400"></i>
+        </div>
+        <h2 class="text-lg font-bold text-white/70" id="wait-msg">Tim is scoring...</h2>
+        <p class="text-sm text-white/30 mt-1" id="wait-sub">Check the big screen</p>
+    </div>
+</div>
+
+<!-- ═══ SCREEN: TALLY (every 5 Qs) ═══ -->
+<div id="screen-tally" class="w-full max-w-sm hidden text-center">
+    <div class="slide-up">
+        <div class="text-sm font-bold text-white/30 uppercase mb-3" id="tally-title">Halfway Scores</div>
+        <div id="tally-list" class="space-y-2 mb-4"></div>
+        <div class="text-xs text-white/20 animate-pulse">Next question coming up...</div>
+    </div>
+</div>
+
+<!-- ═══ SCREEN: FINAL ═══ -->
+<div id="screen-final" class="w-full max-w-sm hidden text-center">
+    <div class="bounce-in">
+        <div class="text-5xl mb-3">🏆</div>
+        <h2 class="text-2xl font-black text-white/90 mb-2">Quiz Complete!</h2>
+        <div id="final-rank" class="text-lg text-brand-accent font-bold mb-4"></div>
+        <div id="final-scores" class="space-y-2 mb-4"></div>
+        <p class="text-xs text-white/20">See you next class!</p>
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE
+// ═══════════════════════════════════════════════════════════════
+const firebaseConfig={apiKey:"AIzaSyDXYLxPZRkb9IZSilqYqqRKnUsmJyXL_ss",authDomain:"intake-25g-trivia.firebaseapp.com",databaseURL:"https://intake-25g-trivia-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"intake-25g-trivia",storageBucket:"intake-25g-trivia.firebasestorage.app",messagingSenderId:"138198468293",appId:"1:138198468293:web:cf8f5d589a693dd2e852ac"};
+if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
+
+const CLASS_MEMBERS=['Alex','Chelsea','Clare','Jarrahd','Jhersy','Joey','Kris','Neil','Selvi','Tim','Wally'];
+const CIRCUMFERENCE=213.6;
+let myName='',roomId='',timerInterval=null,hasAnswered=false;
+
+function todayRoomId(){const d=new Date();return'room-'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+
+// ═══════════════════════════════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════════════════════════════
+function show(id){['name','lobby','question','wait-score','tally','final'].forEach(s=>document.getElementById('screen-'+s).classList.toggle('hidden',s!==id));}
+
+function renderNames(){
+    roomId=todayRoomId();
+    document.getElementById('name-buttons').innerHTML=CLASS_MEMBERS.map(name=>
+        `<button onclick="selectName('${name}')" class="w-full py-3 px-4 rounded-xl text-left font-semibold text-base bg-brand-mid/60 border border-white/5 text-white/80 hover:border-brand-accent/40 hover:bg-brand-mid active:scale-[0.98] transition-all flex items-center justify-between">
+            <span class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-sm font-bold text-white/40">${name[0]}</span>
+                ${name}
+                ${name==='Tim'?'<span class="text-[10px] text-brand-accent ml-1 font-bold">(Presenter)</span>':''}
+            </span>
+            <i class="bi bi-arrow-right text-white/20"></i>
+        </button>`
+    ).join('');
+}
+
+function selectName(name){
+    myName=name;
+    // If Tim, redirect to dashboard as presenter
+    if(name==='Tim'){
+        window.location.href='index.html';
+        return;
+    }
+    // Register in Firebase lobby
+    db.ref('rooms/'+roomId+'/players/'+name).set({joined:Date.now()});
+    // Also mark attendance
+    const todayKey=new Date().toISOString().slice(0,10).replace(/-/g,'');
+    db.ref('attendance/'+todayKey+'/'+name).set({name,time:new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'}),timestamp:new Date().toISOString()});
+
+    document.getElementById('lobby-name').textContent=name;
+    show('lobby');
+    listenToRoom();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LISTEN TO ROOM STATE
+// ═══════════════════════════════════════════════════════════════
+function listenToRoom(){
+    // Show other players in lobby
+    db.ref('rooms/'+roomId+'/players').on('value',snap=>{
+        const p=snap.val()||{};
+        document.getElementById('lobby-others').innerHTML=Object.keys(p).filter(n=>n!==myName).map(n=>
+            `<span class="px-3 py-1.5 bg-brand-accent/10 border border-brand-accent/20 rounded-lg text-brand-accent text-sm font-bold">${n}</span>`
+        ).join('');
+    });
+    // Listen for state changes
+    db.ref('rooms/'+roomId+'/state').on('value',snap=>{
+        const state=snap.val();
+        if(state==='question') loadQuestion();
+        else if(state==='scoring') showWaitScore();
+        else if(state==='tally') showTally();
+        else if(state==='podium') showFinal();
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// QUESTION
+// ═══════════════════════════════════════════════════════════════
+function loadQuestion(){
+    db.ref('rooms/'+roomId).once('value').then(snap=>{
+        const room=snap.val();if(!room||!room.questions)return;
+        const idx=room.currentQ||0,q=room.questions[idx];
+        hasAnswered=false;
+        document.getElementById('mob-q-counter').textContent=`Q${idx+1}/20`;
+        document.getElementById('mob-q-cat').textContent={classmate:'👥 Classmate',course:'📚 Course',webdev:'💻 Web Dev',aussie:'🇦🇺 Aussie',general:'🌐 General'}[q.cat]||q.cat;
+        document.getElementById('mob-q-text').textContent=q.q;
+        document.getElementById('mob-answered-msg').textContent='';
+        const colors=['border-red-500/30 text-red-300 bg-red-500/5','border-blue-500/30 text-blue-300 bg-blue-500/5','border-amber-500/30 text-amber-300 bg-amber-500/5','border-green-500/30 text-green-300 bg-green-500/5'];
+        document.getElementById('mob-q-options').innerHTML=q.opts.map((o,i)=>
+            `<button class="opt-btn w-full py-3.5 px-4 rounded-xl border text-left font-bold text-base ${colors[i]}" onclick="submitAnswer(${idx},${i},${q.ans})">${o}</button>`
+        ).join('');
+        // Timer
+        let timeLeft=15;
+        document.getElementById('timer-text').textContent=timeLeft;
+        document.getElementById('timer-circle').style.strokeDashoffset='0';
+        document.getElementById('timer-circle').style.stroke='#10b981';
+        if(timerInterval)clearInterval(timerInterval);
+        timerInterval=setInterval(()=>{
+            timeLeft--;
+            document.getElementById('timer-text').textContent=Math.max(0,timeLeft);
+            document.getElementById('timer-circle').style.strokeDashoffset=((15-timeLeft)/15*CIRCUMFERENCE).toString();
+            if(timeLeft<=5)document.getElementById('timer-circle').style.stroke='#ef4444';
+            if(timeLeft<=0){clearInterval(timerInterval);if(!hasAnswered)autoTimeout();}
+        },1000);
+        show('question');
+    });
+}
+
+function submitAnswer(qIdx,ansIdx,correctAns){
+    if(hasAnswered)return;
+    hasAnswered=true;
+    clearInterval(timerInterval);
+    const isCorrect=ansIdx===correctAns;
+    const elapsed=15-parseInt(document.getElementById('timer-text').textContent||'0');
+    // Write to Firebase with timestamp for speed ranking
+    db.ref('rooms/'+roomId+'/answers/'+qIdx+'/'+myName).set({
+        ans:ansIdx,
+        correct:isCorrect,
+        time:elapsed,
+        ts:Date.now()
+    });
+    // Highlight buttons
+    document.querySelectorAll('.opt-btn').forEach((btn,i)=>{
+        btn.onclick=null;
+        if(i===ansIdx&&isCorrect)btn.classList.add('correct');
+        else if(i===ansIdx&&!isCorrect)btn.classList.add('wrong');
+        if(i===correctAns&&!isCorrect)btn.classList.add('reveal-correct');
+    });
+    document.getElementById('mob-answered-msg').textContent=isCorrect?'Correct! '+elapsed+'s':'Wrong — correct answer highlighted';
+    document.getElementById('mob-answered-msg').className='text-center mt-4 text-sm font-bold '+(isCorrect?'text-brand-accent':'text-red-400');
+}
+
+function autoTimeout(){
+    hasAnswered=true;
+    db.ref('rooms/'+roomId+'/answers/'+(0)+'/'+myName).once('value').then(snap=>{
+        if(!snap.exists()){
+            // didn't answer in time — just mark as timed out on current Q
+            db.ref('rooms/'+roomId).once('value').then(s=>{
+                const idx=s.val()?.currentQ||0;
+                db.ref('rooms/'+roomId+'/answers/'+idx+'/'+myName).set({ans:-1,correct:false,time:15,ts:Date.now()});
+            });
+        }
+    });
+    document.querySelectorAll('.opt-btn').forEach(btn=>{btn.onclick=null;btn.style.opacity='0.3';});
+    document.getElementById('mob-answered-msg').textContent="Time's up!";
+    document.getElementById('mob-answered-msg').className='text-center mt-4 text-sm font-bold text-amber-400';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WAIT / TALLY / FINAL
+// ═══════════════════════════════════════════════════════════════
+function showWaitScore(){
+    document.getElementById('wait-icon').innerHTML='<i class="bi bi-hourglass-split text-amber-400"></i>';
+    document.getElementById('wait-msg').textContent='Tim is scoring...';
+    document.getElementById('wait-sub').textContent='Check the big screen';
+    show('wait-score');
+}
+
+function showTally(){
+    db.ref('rooms/'+roomId+'/gameScores').once('value').then(snap=>{
+        const scores=snap.val()||{};
+        const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+        db.ref('rooms/'+roomId+'/currentQ').once('value').then(qSnap=>{
+            const qNum=(qSnap.val()||0)+1;
+            document.getElementById('tally-title').textContent=`Scores after Q${qNum}`;
+            const medals=['🥇','🥈','🥉'];
+            document.getElementById('tally-list').innerHTML=sorted.map(([n,p],i)=>{
+                const isMe=n===myName;
+                return`<div class="flex items-center justify-between py-2 px-3 rounded-xl ${isMe?'bg-brand-accent/10 border border-brand-accent/20':'bg-white/[0.03]'}">
+                    <span class="text-base font-bold ${isMe?'text-brand-accent':'text-white/70'}">${medals[i]||''} ${n}</span>
+                    <span class="text-base mono font-black ${isMe?'text-brand-accent':'text-white/50'}">${p}pts</span>
+                </div>`;
+            }).join('');
+            show('tally');
+        });
+    });
+}
+
+function showFinal(){
+    db.ref('rooms/'+roomId+'/gameScores').once('value').then(snap=>{
+        const scores=snap.val()||{};
+        const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+        const myRank=sorted.findIndex(([n])=>n===myName)+1;
+        const myPts=scores[myName]||0;
+        document.getElementById('final-rank').textContent=myRank>0?`You placed #${myRank} with ${myPts} pts`:`${myPts} pts`;
+        const medals=['🥇','🥈','🥉'];
+        document.getElementById('final-scores').innerHTML=sorted.map(([n,p],i)=>{
+            const isMe=n===myName;
+            return`<div class="flex items-center justify-between py-2 px-3 rounded-xl ${isMe?'bg-brand-accent/10 border border-brand-accent/20':'bg-white/[0.03]'}">
+                <span class="text-base font-bold ${isMe?'text-brand-accent':'text-white/70'}">${medals[i]||''} ${n}</span>
+                <span class="text-base mono font-black ${isMe?'text-brand-accent':'text-white/50'}">${p}pts</span>
+            </div>`;
+        }).join('');
+        show('final');
+    });
+}
+
+// INIT
+renderNames();
+</script>
+</body>
+</html>
