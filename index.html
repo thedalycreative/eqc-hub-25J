@@ -52,102 +52,92 @@
 <div id="quokka-egg" title="You found me!"><svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="52" rx="24" ry="22" fill="#b8860b"/><ellipse cx="40" cy="55" rx="18" ry="16" fill="#d4a43a"/><circle cx="32" cy="42" r="5" fill="#1a1a1a"/><circle cx="48" cy="42" r="5" fill="#1a1a1a"/><circle cx="33.5" cy="41" r="1.8" fill="white"/><circle cx="49.5" cy="41" r="1.8" fill="white"/><ellipse cx="40" cy="48" rx="3.5" ry="2.5" fill="#1a1a1a"/><path d="M36 52 Q40 56 44 52" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="28" cy="30" rx="8" ry="12" fill="#b8860b" transform="rotate(-15 28 30)"/><ellipse cx="28" cy="30" rx="5" ry="8" fill="#e8a0b0" transform="rotate(-15 28 30)"/><ellipse cx="52" cy="30" rx="8" ry="12" fill="#b8860b" transform="rotate(15 52 30)"/><ellipse cx="52" cy="30" rx="5" ry="8" fill="#e8a0b0" transform="rotate(15 52 30)"/></svg></div>
 
 <!-- NAVBAR -->
-<nav class="flex items-center justify-between px-5 border-b border-white/5 shrink-0 bg-brand-dark/60" style="height:72px;">
+<nav class="flex items-center justify-between px-6 border-b border-white/5 shrink-0 bg-brand-dark/60" style="height:80px;">
     <div class="flex items-center gap-5">
-        <a href="index.html" class="text-4xl font-black grad-text tracking-tight leading-none hover:opacity-80 transition">25G</a>
-        <div class="h-10 w-px bg-white/10"></div>
-        <a href="https://eqc.edu.au" target="_blank" class="text-lg font-bold text-white/70 hover:text-brand-accent transition">Equinim College</a>
-        <span class="text-white/15 text-lg">·</span>
-        <a href="https://study.equinimcollege.com/" target="_blank" class="text-base text-white/40 hover:text-brand-accent2 transition flex items-center gap-2"><i class="bi bi-mortarboard-fill"></i> Diploma of IT · Back End Web Dev</a>
+        <a href="index.html" class="text-5xl font-black grad-text tracking-tight leading-none hover:opacity-80 transition">25G</a>
+        <div class="h-12 w-px bg-white/10"></div>
+        <a href="https://eqc.edu.au" target="_blank" class="text-2xl font-bold text-white/70 hover:text-brand-accent transition">Equinim College</a>
+        <span class="text-white/15 text-2xl">·</span>
+        <a href="https://study.equinimcollege.com/" target="_blank" class="text-xl text-white/40 hover:text-brand-accent2 transition flex items-center gap-2"><i class="bi bi-mortarboard-fill"></i> Diploma of IT · Back End Web Dev</a>
     </div>
     <div class="flex items-center gap-5">
-        <div class="flex items-center gap-2 text-base text-white/40"><i class="bi bi-door-open-fill"></i><span class="font-semibold">Room 1</span></div>
-        <div class="h-10 w-px bg-white/10"></div>
+        <div class="flex items-center gap-2 text-xl text-white/40"><i class="bi bi-door-open-fill"></i><span class="font-semibold">Room 1</span></div>
+        <div class="h-12 w-px bg-white/10"></div>
         <div id="class-badge"></div>
-        <div class="h-10 w-px bg-white/10"></div>
-        <div class="flex items-center gap-2 text-base mono text-white/50" id="header-clock"></div>
-        <div class="h-10 w-px bg-white/10"></div>
+        <div class="h-12 w-px bg-white/10"></div>
+        <div class="flex items-center gap-2 text-xl mono text-white/50" id="header-clock"></div>
+        <div class="h-12 w-px bg-white/10"></div>
         <div class="flex items-center gap-5">
-            <div class="flex items-center gap-2.5"><img src="img/tim-head.png" alt="Tim" class="w-14 h-14 rounded-full object-cover border-[3px] border-brand-accent/50 float-anim pulse-ring"><div class="leading-tight"><div class="text-base font-bold text-white/90">Tim</div><div class="text-[10px] text-brand-accent font-bold uppercase tracking-wider">Trainer</div></div></div>
-            <div class="flex items-center gap-2.5"><img src="img/duke-head.png" alt="Duke" class="w-14 h-14 rounded-full object-cover border-[3px] border-amber-400/50 float-anim-2"><div class="leading-tight"><div class="text-base font-bold text-white/90">Duke</div><div class="text-[10px] text-amber-400 font-bold uppercase tracking-wider">Good Boy</div></div></div>
+            <div class="flex items-center gap-3"><img src="img/tim-head.png" alt="Tim" class="w-16 h-16 rounded-full object-cover border-[3px] border-brand-accent/50 float-anim pulse-ring"><div class="leading-tight"><div class="text-lg font-bold text-white/90">Tim</div><div class="text-xs text-brand-accent font-bold uppercase tracking-wider">Trainer</div></div></div>
+            <div class="flex items-center gap-3"><img src="img/duke-head.png" alt="Duke" class="w-16 h-16 rounded-full object-cover border-[3px] border-amber-400/50 float-anim-2"><div class="leading-tight"><div class="text-lg font-bold text-white/90">Duke</div><div class="text-xs text-amber-400 font-bold uppercase tracking-wider">Good Boy</div></div></div>
         </div>
     </div>
 </nav>
 
-<!-- DASHBOARD GRID: 3 cols x 2 rows — AI/ML + Quiz on right -->
-<main class="grid gap-2 p-2 flex-1 min-h-0" style="grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;">
-    <!-- 1. ATTENDANCE (top-left) -->
-    <div class="card flex flex-col overflow-hidden" style="border-color:rgba(16,185,129,0.12);">
+<!-- DASHBOARD GRID: 3 cols — Attendance | Progress+Subjects | AI/ML+Quiz -->
+<main class="grid gap-2 p-2 flex-1 min-h-0" style="grid-template-columns:1fr 1fr 1fr;grid-template-rows:3fr 1fr;">
+    <!-- COL 1: ATTENDANCE (spans both rows, full height) -->
+    <div class="card flex flex-col overflow-hidden" style="border-color:rgba(16,185,129,0.12);grid-row:1/3;">
         <div class="flex items-center justify-between mb-2 shrink-0">
-            <h2 class="text-xl font-extrabold text-white/90 flex items-center gap-2"><i class="bi bi-bar-chart-fill text-brand-accent"></i> Attendance</h2>
+            <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-2"><i class="bi bi-bar-chart-fill text-brand-accent"></i> Attendance</h2>
             <div class="flex items-center gap-2">
-                <div id="today-checkins" class="hidden"><div class="flex items-center gap-1.5 text-base text-brand-accent font-bold"><div class="w-2.5 h-2.5 rounded-full bg-brand-accent animate-pulse"></div><span id="checkin-count">0</span> here</div></div>
-                <span class="text-sm mono text-white/20" id="att-total"></span>
+                <div id="today-checkins" class="hidden"><div class="flex items-center gap-1.5 text-lg text-brand-accent font-bold"><div class="w-2.5 h-2.5 rounded-full bg-brand-accent animate-pulse"></div><span id="checkin-count">0</span> here</div></div>
+                <span class="text-base mono text-white/20" id="att-total"></span>
             </div>
         </div>
         <div class="flex-1 overflow-y-auto min-h-0" id="att-list"></div>
     </div>
 
-    <!-- 2. COURSE PROGRESS (top-center) -->
+    <!-- COL 2 TOP: COURSE PROGRESS -->
     <div class="card flex flex-col overflow-hidden" style="border-color:rgba(6,182,212,0.1);">
         <div class="flex items-center justify-between mb-2 shrink-0">
-            <h2 class="text-xl font-extrabold text-white/90 flex items-center gap-2"><i class="bi bi-mortarboard-fill text-brand-accent2"></i> Course Progress</h2>
-            <a href="https://study.equinimcollege.com/" target="_blank" class="text-sm font-bold text-brand-accent2/40 hover:text-brand-accent2 transition uppercase">Study Hub <i class="bi bi-box-arrow-up-right"></i></a>
+            <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-2"><i class="bi bi-mortarboard-fill text-brand-accent2"></i> Course Progress</h2>
+            <a href="https://study.equinimcollege.com/" target="_blank" class="text-base font-bold text-brand-accent2/40 hover:text-brand-accent2 transition uppercase">Study Hub <i class="bi bi-box-arrow-up-right"></i></a>
         </div>
         <div class="flex-1 overflow-y-auto min-h-0" id="hub-list"></div>
     </div>
 
-    <!-- 3. AI/ML NEWS (top-right) -->
+    <!-- COL 3 TOP: AI/ML NEWS (3/4 height) -->
     <div class="card flex flex-col overflow-hidden" style="border-color:rgba(139,92,246,0.1);">
         <div class="flex items-center justify-between mb-2 shrink-0">
-            <h2 class="text-xl font-extrabold text-white/90 flex items-center gap-2"><i class="bi bi-robot text-purple-400"></i> AI & ML</h2>
-            <span class="text-sm font-bold text-purple-400/40 uppercase">S07 · Current</span>
+            <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-2"><i class="bi bi-robot text-purple-400"></i> AI & ML</h2>
+            <span class="text-base font-bold text-purple-400/40 uppercase">S07 · Current</span>
         </div>
         <div class="flex-1 auto-scroll min-h-0"><div class="auto-scroll-inner" id="ai-news"></div></div>
         <div class="shrink-0 pt-2 mt-1.5 border-t border-white/5">
-            <div class="text-sm font-bold text-white/30 uppercase mb-1.5">After Break — Work Placements</div>
-            <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-base text-white/50">
-                <span class="flex items-center gap-1.5"><i class="bi bi-rocket-takeoff text-brand-accent2"></i> Class project</span>
-                <span class="flex items-center gap-1.5"><i class="bi bi-globe2 text-brand-accent2"></i> Portfolio</span>
-                <span class="flex items-center gap-1.5"><i class="bi bi-file-earmark-person text-brand-accent2"></i> Resumes</span>
-                <span class="flex items-center gap-1.5"><i class="bi bi-mic text-brand-accent2"></i> Interviews</span>
+            <div class="text-base font-bold text-white/30 uppercase mb-1.5">After Break — Work Placements</div>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-lg text-white/50">
+                <span class="flex items-center gap-2"><i class="bi bi-rocket-takeoff text-brand-accent2"></i> Class project</span>
+                <span class="flex items-center gap-2"><i class="bi bi-globe2 text-brand-accent2"></i> Portfolio</span>
+                <span class="flex items-center gap-2"><i class="bi bi-file-earmark-person text-brand-accent2"></i> Resumes</span>
+                <span class="flex items-center gap-2"><i class="bi bi-mic text-brand-accent2"></i> Interviews</span>
             </div>
         </div>
     </div>
 
-    <!-- 4. SUBJECTS + COMING UP (bottom-left) -->
+    <!-- COL 2 BOTTOM: SUBJECTS -->
     <div class="card flex flex-col overflow-hidden">
-        <h2 class="text-xl font-extrabold text-white/90 flex items-center gap-2 mb-2 shrink-0"><i class="bi bi-trophy-fill text-amber-400"></i> Subjects</h2>
+        <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-2 mb-2 shrink-0"><i class="bi bi-trophy-fill text-amber-400"></i> Subjects</h2>
         <div class="flex-1 overflow-y-auto min-h-0" id="subject-awards"></div>
         <div class="shrink-0 pt-2 mt-1.5 border-t border-white/5 flex gap-2">
-            <div class="flex-1 bg-pink-500/8 rounded-lg px-3 py-2 border border-pink-500/10"><div class="flex items-center gap-2"><i class="bi bi-sun-fill text-pink-300 text-lg"></i><span class="text-base font-bold text-pink-300">Break</span><span class="text-sm text-white/30">3–17 Apr</span><span class="text-sm text-pink-400/50 font-bold ml-auto" id="break-countdown"></span></div></div>
-            <div class="flex-1 bg-brand-accent/8 rounded-lg px-3 py-2 border border-brand-accent/10"><div class="flex items-center gap-2"><i class="bi bi-briefcase-fill text-brand-accent text-lg"></i><span class="text-base font-bold text-brand-accent">Placements</span><span class="text-sm text-white/30">20 Apr</span></div></div>
-            <div class="bg-amber-500/8 rounded-lg px-3 py-2 border border-amber-500/10"><div class="flex items-center gap-2"><i class="bi bi-mortarboard-fill text-amber-300 text-lg"></i><span class="text-base font-bold text-amber-300">Finish</span><span class="text-sm text-white/30">15 May</span><span class="text-sm text-amber-400/50 font-bold ml-1" id="course-countdown"></span></div></div>
+            <div class="flex-1 bg-pink-500/8 rounded-lg px-3 py-2 border border-pink-500/10"><div class="flex items-center gap-2"><i class="bi bi-sun-fill text-pink-300 text-xl"></i><span class="text-lg font-bold text-pink-300">Break</span><span class="text-base text-white/30">3–17 Apr</span><span class="text-base text-pink-400/50 font-bold ml-auto" id="break-countdown"></span></div></div>
+            <div class="flex-1 bg-brand-accent/8 rounded-lg px-3 py-2 border border-brand-accent/10"><div class="flex items-center gap-2"><i class="bi bi-briefcase-fill text-brand-accent text-xl"></i><span class="text-lg font-bold text-brand-accent">Placements</span><span class="text-base text-white/30">20 Apr</span></div></div>
+            <div class="bg-amber-500/8 rounded-lg px-3 py-2 border border-amber-500/10"><div class="flex items-center gap-2"><i class="bi bi-mortarboard-fill text-amber-300 text-xl"></i><span class="text-lg font-bold text-amber-300">Finish</span><span class="text-base text-white/30">15 May</span><span class="text-base text-amber-400/50 font-bold ml-1" id="course-countdown"></span></div></div>
         </div>
     </div>
 
-    <!-- 5. COMING UP / PLACEHOLDER (bottom-center) — merged into subjects, use for extra info -->
-    <div class="card flex flex-col overflow-hidden" style="border-color:rgba(6,182,212,0.1);">
-        <h2 class="text-xl font-extrabold text-white/90 flex items-center gap-2 mb-2 shrink-0"><i class="bi bi-calendar-event-fill text-brand-accent2"></i> Coming Up</h2>
-        <div class="flex-1 flex flex-col gap-3 justify-center">
-            <div class="bg-pink-500/8 rounded-xl px-4 py-3 border border-pink-500/10"><div class="flex items-center gap-3"><i class="bi bi-sun-fill text-pink-300 text-2xl"></i><div><div class="text-lg font-bold text-pink-300">School Break</div><div class="text-base text-white/40">3 – 17 April · 2 weeks off</div></div><span class="text-base text-pink-400/50 font-bold ml-auto" id="break-countdown2"></span></div></div>
-            <div class="bg-brand-accent/8 rounded-xl px-4 py-3 border border-brand-accent/10"><div class="flex items-center gap-3"><i class="bi bi-briefcase-fill text-brand-accent text-2xl"></i><div><div class="text-lg font-bold text-brand-accent">Work Placements</div><div class="text-base text-white/40">Starts 20 April · Projects, portfolios, resumes</div></div></div></div>
-            <div class="bg-amber-500/8 rounded-xl px-4 py-3 border border-amber-500/10"><div class="flex items-center gap-3"><i class="bi bi-mortarboard-fill text-amber-300 text-2xl"></i><div><div class="text-lg font-bold text-amber-300">Course Finishes</div><div class="text-base text-white/40">15 May 2026</div></div><span class="text-base text-amber-400/50 font-bold ml-auto" id="course-countdown2"></span></div></div>
-        </div>
-    </div>
-
-    <!-- 6. RIZ QUIZ (bottom-right, compact) -->
+    <!-- COL 3 BOTTOM: RIZ QUIZ (1/4 height) -->
     <div class="card quiz-card flex flex-col items-center justify-center text-center overflow-hidden">
-        <h2 class="text-xl font-black flex items-center gap-2 mb-2"><i class="bi bi-lightning-charge-fill text-amber-400"></i><span class="grad-warm">Riz Quiz</span></h2>
-        <div class="flex items-center gap-4 mb-2">
-            <div class="qr-container"><div id="trivia-qr" class="w-28 h-28 rounded-xl border-2 border-amber-400/30 overflow-hidden bg-brand-deeper/80 flex items-center justify-center"></div><div class="qr-logo" style="width:22px;height:22px;font-size:13px;">🦘</div></div>
-            <div class="text-left">
-                <p class="text-sm text-white/40 mb-1">20 Qs · 15s · Speed Scoring</p>
-                <div class="text-xs text-amber-300/70 mono mb-2" id="trivia-url-display">play.html</div>
-                <button onclick="startLobby()" class="px-6 py-2.5 bg-gradient-to-r from-amber-500 via-pink-500 to-purple-500 rounded-xl text-white font-extrabold text-base hover:scale-105 transition-transform shadow-lg shadow-pink-500/30 flex items-center gap-2"><i class="bi bi-play-fill text-lg"></i> Start Quiz</button>
+        <div class="flex items-center gap-4">
+            <div class="qr-container"><div id="trivia-qr" class="w-24 h-24 rounded-xl border-2 border-amber-400/30 overflow-hidden bg-brand-deeper/80 flex items-center justify-center"></div><div class="qr-logo" style="width:20px;height:20px;font-size:12px;">🦘</div></div>
+            <div class="text-left flex-1">
+                <h2 class="text-2xl font-black flex items-center gap-2 mb-1"><i class="bi bi-lightning-charge-fill text-amber-400"></i><span class="grad-warm">Riz Quiz</span></h2>
+                <p class="text-base text-white/40 mb-1">20 Qs · 15s · Speed Scoring</p>
+                <div class="text-sm text-amber-300/70 mono" id="trivia-url-display">play.html</div>
             </div>
+            <button onclick="startLobby()" class="px-6 py-3 bg-gradient-to-r from-amber-500 via-pink-500 to-purple-500 rounded-xl text-white font-extrabold text-lg hover:scale-105 transition-transform shadow-lg shadow-pink-500/30 flex items-center gap-2 shrink-0"><i class="bi bi-play-fill text-xl"></i> Play</button>
         </div>
-        <div id="trivia-leaders-full" class="w-full text-left"></div>
+        <div id="trivia-leaders-full" class="w-full text-left mt-2"></div>
     </div>
 </main>
 
