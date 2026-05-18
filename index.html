@@ -3,486 +3,372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intake 25G | Equinim College</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐻</text></svg>">
+    <title>Intake 26B | Equinim College</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-    <script>tailwind.config={theme:{extend:{colors:{brand:{dark:'#0f172a',deeper:'#020617',mid:'#1e293b',accent:'#10b981',accent2:'#06b6d4',warn:'#f59e0b',purple:'#8b5cf6',pink:'#ec4899'}},fontFamily:{sans:['Inter','system-ui','sans-serif'],mono:['JetBrains Mono','monospace']}}}}</script>
+    <script>tailwind.config={theme:{extend:{colors:{brand:{dark:'#0f172a',deeper:'#020617',mid:'#1e293b',accent:'#10b981',accent2:'#06b6d4',warn:'#f59e0b',purple:'#8b5cf6'}},fontFamily:{sans:['Inter','system-ui','sans-serif'],mono:['JetBrains Mono','monospace']}}}}</script>
     <style>
         body{font-family:'Inter',system-ui,sans-serif;margin:0;}
         .mono{font-family:'JetBrains Mono',monospace;}
         .grad-text{background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-        .grad-warm{background:linear-gradient(135deg,#fbbf24,#f59e0b,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-        .float-anim{animation:fh 3s ease-in-out infinite;}
-        @keyframes fh{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.05)}}
-        .float-anim-2{animation:fh2 3.5s ease-in-out infinite .4s;}
-        @keyframes fh2{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-7px) rotate(3deg)}}
-        .pulse-ring{animation:pr 2s ease-out infinite;}
-        @keyframes pr{0%{box-shadow:0 0 0 0 rgba(16,185,129,0.5)}70%{box-shadow:0 0 0 12px transparent}100%{box-shadow:0 0 0 0 transparent}}
-        .slide-up{animation:su .3s ease-out;}@keyframes su{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-        .pop-in{animation:pi .4s cubic-bezier(.175,.885,.32,1.275);}@keyframes pi{0%{transform:scale(0)}100%{transform:scale(1)}}
+        .card{background:#0f172a;border-radius:16px;border:1px solid rgba(255,255,255,0.06);padding:clamp(16px,2vw,32px);display:flex;flex-direction:column;overflow:hidden;}
         .blink{animation:bk 1s step-end infinite;}@keyframes bk{0%,100%{opacity:1}50%{opacity:0}}
-        .award-badge{transition:all .2s;cursor:pointer;user-select:none;}
-        .award-badge:hover{transform:scale(1.08);}
-        .award-badge.gold{background:linear-gradient(135deg,#fbbf24,#f59e0b)!important;color:#000!important;border-color:#fbbf24!important;}
-        .award-badge.silver{background:linear-gradient(135deg,#94a3b8,#64748b)!important;color:#000!important;border-color:#94a3b8!important;}
-        .award-badge.bronze{background:linear-gradient(135deg,#b45309,#92400e)!important;color:#fff!important;border-color:#b45309!important;}
-        .timer-bar{transition:width 1s linear;}
-        .confetti{position:fixed;pointer-events:none;z-index:9999;}
-        .card{background:#0f172a;border-radius:12px;border:1px solid rgba(255,255,255,0.06);padding:10px 12px;}
-        ::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#334155;border-radius:99px;}
-        .trivia-overlay{position:fixed;inset:0;z-index:100;background:#020617;display:none;flex-direction:column;}
-        .trivia-overlay.active{display:flex;}
-        .auto-scroll{overflow:hidden;}.auto-scroll-inner{animation:aScroll 20s linear infinite;}
-        @keyframes aScroll{0%{transform:translateY(0)}45%{transform:translateY(0)}50%{transform:translateY(-50%)}95%{transform:translateY(-50%)}100%{transform:translateY(0)}}
-        .quiz-card{background:linear-gradient(135deg,rgba(251,191,36,0.15),rgba(236,72,153,0.15));border-color:rgba(251,191,36,0.25);}
-        .qr-container{position:relative;display:inline-block;}.qr-logo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;background:#020617;border-radius:6px;padding:2px;display:flex;align-items:center;justify-content:center;font-size:18px;}
-        #quokka-egg{position:fixed;z-index:50;width:70px;height:70px;cursor:pointer;transition:all .4s cubic-bezier(.68,-.55,.27,1.55);filter:drop-shadow(0 4px 12px rgba(0,0,0,.5));}
-        #quokka-egg:hover{transform:scale(0) rotate(180deg);opacity:0;}
-        #quokka-egg.reset{transition:none;transform:scale(0);opacity:0;}
-        #quokka-egg.show{transform:scale(1) rotate(0deg);opacity:1;}
+        .pulse-dot{animation:pd 2s ease-in-out infinite;}@keyframes pd{0%,100%{opacity:.3}50%{opacity:1}}
+        .fade-in{animation:fi .5s ease-out;}@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     </style>
 </head>
 <body class="bg-brand-deeper text-white h-screen overflow-hidden flex flex-col">
 
-<!-- HIDDEN QUOKKA -->
-<div id="quokka-egg" title="You found me!"><svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="52" rx="24" ry="22" fill="#b8860b"/><ellipse cx="40" cy="55" rx="18" ry="16" fill="#d4a43a"/><circle cx="32" cy="42" r="5" fill="#1a1a1a"/><circle cx="48" cy="42" r="5" fill="#1a1a1a"/><circle cx="33.5" cy="41" r="1.8" fill="white"/><circle cx="49.5" cy="41" r="1.8" fill="white"/><ellipse cx="40" cy="48" rx="3.5" ry="2.5" fill="#1a1a1a"/><path d="M36 52 Q40 56 44 52" stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="28" cy="30" rx="8" ry="12" fill="#b8860b" transform="rotate(-15 28 30)"/><ellipse cx="28" cy="30" rx="5" ry="8" fill="#e8a0b0" transform="rotate(-15 28 30)"/><ellipse cx="52" cy="30" rx="8" ry="12" fill="#b8860b" transform="rotate(15 52 30)"/><ellipse cx="52" cy="30" rx="5" ry="8" fill="#e8a0b0" transform="rotate(15 52 30)"/></svg></div>
+<!-- ╔══════════════════════════════════════════════════════╗ -->
+<!-- ║  CONFIG — Change these for each intake              ║ -->
+<!-- ╚══════════════════════════════════════════════════════╝ -->
+<script>
+const CONFIG = {
+    intake:       '26B',
+    course:       'Diploma of IT — Back End Web Development',
+    college:      'Equinim College',
+    room:         'Room 1',
+    trainer:      'Tim',
+    trainerImg:   'img/tim-head.png',
+    startDate:    '2026-07-06',   // first day of class
+    endDate:      '2026-12-18',   // last day of class
+    classDays:    [1, 2, 5],      // Mon=1, Tue=2, Fri=5
+    holidays:     [
+        // { start: '2026-09-28', end: '2026-10-09' }  // term break example
+    ],
+    // Google Sheet: File > Share > Publish to web > CSV
+    // Columns: Date | Trainer | Topics | Notes | Attendance
+    sheetUrl:     '',
+    refreshSecs:  60,
+};
+</script>
 
 <!-- NAVBAR -->
 <nav class="flex items-center justify-between px-6 border-b border-white/5 shrink-0 bg-brand-dark/60" style="height:80px;">
     <div class="flex items-center gap-5">
-        <a href="index.html" class="text-5xl font-black grad-text tracking-tight leading-none hover:opacity-80 transition">25G</a>
+        <span class="text-5xl font-black grad-text tracking-tight leading-none" id="nav-intake">26B</span>
         <div class="h-12 w-px bg-white/10"></div>
-        <a href="https://eqc.edu.au" target="_blank" class="text-2xl font-bold text-white/70 hover:text-brand-accent transition">Equinim College</a>
+        <span class="text-2xl font-bold text-white/70" id="nav-college">Equinim College</span>
         <span class="text-white/15 text-2xl">·</span>
-        <a href="https://study.equinimcollege.com/" target="_blank" class="text-xl text-white/40 hover:text-brand-accent2 transition flex items-center gap-2"><i class="bi bi-mortarboard-fill"></i> Diploma of IT · Back End Web Dev</a>
+        <span class="text-xl text-white/40 flex items-center gap-2"><i class="bi bi-mortarboard-fill"></i> <span id="nav-course-short">Diploma of IT</span></span>
     </div>
     <div class="flex items-center gap-5">
-        <div class="flex items-center gap-2 text-xl text-white/40"><i class="bi bi-door-open-fill"></i><span class="font-semibold">Room 1</span></div>
+        <div class="flex items-center gap-2 text-xl text-white/40"><i class="bi bi-door-open-fill"></i><span class="font-semibold" id="nav-room">Room 1</span></div>
         <div class="h-12 w-px bg-white/10"></div>
         <div id="class-badge"></div>
         <div class="h-12 w-px bg-white/10"></div>
         <div class="flex items-center gap-2 text-xl mono text-white/50" id="header-clock"></div>
         <div class="h-12 w-px bg-white/10"></div>
-        <div class="flex items-center gap-5">
-            <div class="flex items-center gap-3"><img src="img/tim-head.png" alt="Tim" class="w-16 h-16 rounded-full object-cover border-[3px] border-brand-accent/50 float-anim pulse-ring"><div class="leading-tight"><div class="text-lg font-bold text-white/90">Tim</div><div class="text-xs text-brand-accent font-bold uppercase tracking-wider">Trainer</div></div></div>
-            <div class="flex items-center gap-3"><img src="img/duke-head.png" alt="Duke" class="w-16 h-16 rounded-full object-cover border-[3px] border-amber-400/50 float-anim-2"><div class="leading-tight"><div class="text-lg font-bold text-white/90">Duke</div><div class="text-xs text-amber-400 font-bold uppercase tracking-wider">Good Boy</div></div></div>
-        </div>
+        <div class="flex items-center gap-3" id="nav-trainer"></div>
     </div>
 </nav>
 
-<!-- DASHBOARD GRID: 3 cols — Attendance | Progress+Subjects | AI/ML+Quiz -->
-<main class="grid gap-2 p-2 flex-1 min-h-0" style="grid-template-columns:1fr 1fr 1fr;grid-template-rows:3fr 1fr;">
-    <!-- COL 1: ATTENDANCE (spans both rows, full height) -->
-    <div class="card flex flex-col overflow-hidden" style="border-color:rgba(16,185,129,0.12);grid-row:1/3;">
-        <div class="flex items-center justify-between mb-2 shrink-0">
-            <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-2"><i class="bi bi-bar-chart-fill text-brand-accent"></i> Attendance</h2>
-            <div class="flex items-center gap-2">
-                <div id="today-checkins" class="hidden"><div class="flex items-center gap-1.5 text-lg text-brand-accent font-bold"><div class="w-2.5 h-2.5 rounded-full bg-brand-accent animate-pulse"></div><span id="checkin-count">0</span> here</div></div>
-                <span class="text-base mono text-white/20" id="att-total"></span>
-            </div>
-        </div>
-        <div class="flex-1 overflow-y-auto min-h-0" id="att-list"></div>
+<!-- 6-TILE GRID -->
+<main class="grid gap-3 p-3 flex-1 min-h-0" style="grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;">
+
+    <!-- TILE 1: INTAKE + COURSE (big hero) -->
+    <div class="card items-center justify-center text-center" style="border-color:rgba(16,185,129,0.15);">
+        <div class="text-[10rem] font-black grad-text leading-none tracking-tighter" id="tile-intake">26B</div>
+        <div class="text-2xl font-bold text-white/40 mt-2" id="tile-course">Diploma of IT — Back End Web Development</div>
     </div>
 
-    <!-- COL 2 TOP: COURSE PROGRESS -->
-    <div class="card flex flex-col overflow-hidden" style="border-color:rgba(6,182,212,0.1);">
-        <div class="flex items-center justify-between mb-2 shrink-0">
-            <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-2"><i class="bi bi-mortarboard-fill text-brand-accent2"></i> Course Progress</h2>
-            <a href="https://study.equinimcollege.com/" target="_blank" class="text-base font-bold text-brand-accent2/40 hover:text-brand-accent2 transition uppercase">Study Hub <i class="bi bi-box-arrow-up-right"></i></a>
-        </div>
-        <div class="flex-1 overflow-y-auto min-h-0" id="hub-list"></div>
+    <!-- TILE 2: TRAINER + DATE -->
+    <div class="card items-center justify-center text-center" style="border-color:rgba(6,182,212,0.1);">
+        <img id="tile-trainer-img" src="img/tim-head.png" alt="" class="w-28 h-28 rounded-full object-cover border-4 border-brand-accent/40 mb-4">
+        <div class="text-5xl font-black text-white/90" id="tile-trainer-name">Tim</div>
+        <div class="text-xl text-brand-accent font-bold uppercase tracking-widest mt-1">Trainer</div>
+        <div class="text-lg text-white/30 mt-3 mono" id="tile-date"></div>
     </div>
 
-    <!-- COL 3 TOP: AI/ML NEWS (3/4 height) -->
-    <div class="card flex flex-col overflow-hidden" style="border-color:rgba(139,92,246,0.1);">
-        <div class="flex items-center justify-between mb-2 shrink-0">
-            <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-2"><i class="bi bi-robot text-purple-400"></i> AI & ML</h2>
-            <span class="text-base font-bold text-purple-400/40 uppercase">S07 · Current</span>
-        </div>
-        <div class="flex-1 auto-scroll min-h-0"><div class="auto-scroll-inner" id="ai-news"></div></div>
-        <div class="shrink-0 pt-2 mt-1.5 border-t border-white/5">
-            <div class="text-base font-bold text-white/30 uppercase mb-1.5">After Break — Work Placements</div>
-            <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-lg text-white/50">
-                <span class="flex items-center gap-2"><i class="bi bi-rocket-takeoff text-brand-accent2"></i> Class project</span>
-                <span class="flex items-center gap-2"><i class="bi bi-globe2 text-brand-accent2"></i> Portfolio</span>
-                <span class="flex items-center gap-2"><i class="bi bi-file-earmark-person text-brand-accent2"></i> Resumes</span>
-                <span class="flex items-center gap-2"><i class="bi bi-mic text-brand-accent2"></i> Interviews</span>
+    <!-- TILE 3: TODAY'S TOPICS -->
+    <div class="card" style="border-color:rgba(139,92,246,0.12);">
+        <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-3 mb-4 shrink-0">
+            <i class="bi bi-journal-text text-purple-400"></i> Today's Topics
+        </h2>
+        <div class="flex-1 flex flex-col justify-center" id="tile-topics">
+            <div class="text-center text-white/20 text-xl">
+                <i class="bi bi-cloud-arrow-down text-4xl block mb-2"></i>
+                Submit via Google Form to populate
             </div>
         </div>
     </div>
 
-    <!-- COL 2 BOTTOM: SUBJECTS -->
-    <div class="card flex flex-col overflow-hidden">
-        <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-2 mb-2 shrink-0"><i class="bi bi-trophy-fill text-amber-400"></i> Subjects</h2>
-        <div class="flex-1 overflow-y-auto min-h-0" id="subject-awards"></div>
-        <div class="shrink-0 pt-2 mt-1.5 border-t border-white/5 flex gap-2">
-            <div class="flex-1 bg-pink-500/8 rounded-lg px-3 py-2 border border-pink-500/10"><div class="flex items-center gap-2"><i class="bi bi-sun-fill text-pink-300 text-xl"></i><span class="text-lg font-bold text-pink-300">Break</span><span class="text-base text-white/30">3–17 Apr</span><span class="text-base text-pink-400/50 font-bold ml-auto" id="break-countdown"></span></div></div>
-            <div class="flex-1 bg-brand-accent/8 rounded-lg px-3 py-2 border border-brand-accent/10"><div class="flex items-center gap-2"><i class="bi bi-briefcase-fill text-brand-accent text-xl"></i><span class="text-lg font-bold text-brand-accent">Placements</span><span class="text-base text-white/30">20 Apr</span></div></div>
-            <div class="bg-amber-500/8 rounded-lg px-3 py-2 border border-amber-500/10"><div class="flex items-center gap-2"><i class="bi bi-mortarboard-fill text-amber-300 text-xl"></i><span class="text-lg font-bold text-amber-300">Finish</span><span class="text-base text-white/30">15 May</span><span class="text-base text-amber-400/50 font-bold ml-1" id="course-countdown"></span></div></div>
+    <!-- TILE 4: ATTENDANCE -->
+    <div class="card" style="border-color:rgba(16,185,129,0.1);">
+        <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-3 mb-4 shrink-0">
+            <i class="bi bi-people-fill text-brand-accent"></i> Attendance
+        </h2>
+        <div class="flex-1 flex flex-col justify-center items-center" id="tile-attendance">
+            <div class="text-[6rem] font-black text-brand-accent leading-none" id="att-count">—</div>
+            <div class="text-2xl text-white/30 font-bold mt-2">present today</div>
         </div>
     </div>
 
-    <!-- COL 3 BOTTOM: RIZ QUIZ (1/4 height) -->
-    <div class="card quiz-card flex flex-col items-center justify-center text-center overflow-hidden">
-        <div class="flex items-center gap-4">
-            <div class="qr-container"><div id="trivia-qr" class="w-24 h-24 rounded-xl border-2 border-amber-400/30 overflow-hidden bg-brand-deeper/80 flex items-center justify-center"></div><div class="qr-logo" style="width:20px;height:20px;font-size:12px;">🦘</div></div>
-            <div class="text-left flex-1">
-                <h2 class="text-2xl font-black flex items-center gap-2 mb-1"><i class="bi bi-lightning-charge-fill text-amber-400"></i><span class="grad-warm">Riz Quiz</span></h2>
-                <p class="text-base text-white/40 mb-1">20 Qs · 15s · Speed Scoring</p>
-                <div class="text-sm text-amber-300/70 mono" id="trivia-url-display">play.html</div>
+    <!-- TILE 5: NOTES / ANNOUNCEMENTS -->
+    <div class="card" style="border-color:rgba(245,158,11,0.1);">
+        <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-3 mb-4 shrink-0">
+            <i class="bi bi-megaphone-fill text-amber-400"></i> Announcements
+        </h2>
+        <div class="flex-1 flex flex-col justify-center" id="tile-notes">
+            <div class="text-center text-white/20 text-xl">
+                <i class="bi bi-chat-dots text-4xl block mb-2"></i>
+                No announcements yet
             </div>
-            <button onclick="startLobby()" class="px-6 py-3 bg-gradient-to-r from-amber-500 via-pink-500 to-purple-500 rounded-xl text-white font-extrabold text-lg hover:scale-105 transition-transform shadow-lg shadow-pink-500/30 flex items-center gap-2 shrink-0"><i class="bi bi-play-fill text-xl"></i> Play</button>
         </div>
-        <div id="trivia-leaders-full" class="w-full text-left mt-2"></div>
     </div>
+
+    <!-- TILE 6: COURSE PROGRESS -->
+    <div class="card" style="border-color:rgba(236,72,153,0.1);">
+        <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-3 mb-4 shrink-0">
+            <i class="bi bi-bar-chart-fill text-pink-400"></i> Course Progress
+        </h2>
+        <div class="flex-1 flex flex-col justify-center items-center" id="tile-progress">
+            <div class="w-full max-w-xs">
+                <div class="flex justify-between text-lg text-white/40 mb-2">
+                    <span id="prog-label">Day 0</span>
+                    <span id="prog-pct">0%</span>
+                </div>
+                <div class="w-full h-6 bg-white/5 rounded-full overflow-hidden">
+                    <div id="prog-bar" class="h-full rounded-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-1000" style="width:0%"></div>
+                </div>
+                <div class="flex justify-between text-base text-white/20 mt-2">
+                    <span id="prog-start">Start</span>
+                    <span id="prog-end">End</span>
+                </div>
+            </div>
+            <div class="flex gap-6 mt-6 text-lg">
+                <div class="text-center"><div class="text-3xl font-black text-white/60" id="prog-classes">—</div><div class="text-sm text-white/25">Classes</div></div>
+                <div class="text-center"><div class="text-3xl font-black text-white/60" id="prog-remaining">—</div><div class="text-sm text-white/25">Remaining</div></div>
+                <div class="text-center"><div class="text-3xl font-black text-white/60" id="prog-weeks">—</div><div class="text-sm text-white/25">Weeks Left</div></div>
+            </div>
+        </div>
+    </div>
+
 </main>
-
-<!-- TRIVIA OVERLAY -->
-<div class="trivia-overlay" id="trivia-overlay">
-    <div class="flex items-center justify-between px-6 py-3 border-b border-white/5 shrink-0 bg-brand-dark/80" style="height:56px;">
-        <div class="flex items-center gap-4"><i class="bi bi-lightning-charge-fill text-amber-400 text-2xl"></i><h1 class="text-2xl font-black"><span class="grad-warm">Quokkas Riz Quiz</span></h1></div>
-        <div class="flex items-center gap-6"><span class="text-sm font-bold text-white/30 mono" id="overlay-room"></span><button onclick="closeOverlay()" class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 font-bold text-sm hover:bg-white/10 transition flex items-center gap-2"><i class="bi bi-x-lg"></i> Close</button></div>
-    </div>
-    <div class="flex-1 flex min-h-0">
-        <div class="flex-1 flex flex-col p-6 min-h-0">
-            <!-- LOBBY --><div id="state-lobby" class="flex-1 flex flex-col hidden"><div class="text-center mb-6"><div class="text-base font-bold text-white/30 uppercase tracking-[.2em]"><i class="bi bi-people-fill"></i> Lobby</div></div><div class="flex-1 flex flex-wrap gap-4 content-start justify-center p-6" id="lobby-players"></div><div class="text-center mt-4 flex items-center justify-center gap-8"><span class="text-xl text-white/30 mono" id="lobby-count">0 players</span><button onclick="beginGame()" class="px-10 py-4 bg-brand-accent rounded-2xl text-black font-extrabold text-xl hover:bg-brand-accent/80 transition flex items-center gap-2"><i class="bi bi-play-fill text-2xl"></i> Begin</button></div></div>
-            <!-- QUESTION --><div id="state-question" class="flex-1 flex flex-col hidden"><div class="flex items-center justify-between mb-3 shrink-0"><span class="text-lg font-bold text-white/30 uppercase" id="q-counter"></span><span class="text-lg mono text-white/20" id="q-cat"></span></div><div class="w-full h-3 bg-white/5 rounded-full mb-3 shrink-0 overflow-hidden"><div id="timer-bar" class="h-full bg-gradient-to-r from-brand-accent to-brand-accent2 rounded-full timer-bar" style="width:100%"></div></div><div class="text-center mb-2 shrink-0"><span id="timer-num" class="text-6xl font-black mono text-brand-accent">15</span></div><div class="text-center mb-6 shrink-0"><h2 id="q-text" class="text-3xl font-bold leading-snug"></h2></div><div class="grid grid-cols-2 gap-3 shrink-0 max-w-3xl mx-auto w-full" id="q-options"></div><div class="text-center mt-5 shrink-0"><span class="text-lg text-white/30"><span id="answer-count" class="text-brand-accent font-bold text-2xl">0</span> / <span id="player-total">0</span></span></div></div>
-            <!-- SCORING --><div id="state-scoring" class="flex-1 flex flex-col hidden"><div class="text-center mb-2 shrink-0"><span class="text-lg font-bold text-white/30 uppercase" id="score-counter"></span><h3 id="score-question" class="text-xl font-bold text-white/50 mt-1"></h3><div class="text-xl text-brand-accent font-semibold mt-1" id="score-answer"></div></div><div class="text-center my-4 shrink-0"><div id="award-prompt" class="text-3xl font-black"><span class="text-amber-400">Click for 🥇 1st (3pts)</span></div></div><div class="flex-1 flex flex-wrap gap-3 content-start justify-center p-4 overflow-y-auto" id="scoring-badges"></div><div class="flex items-center justify-center gap-4 mt-3 shrink-0"><button onclick="skipScoring()" class="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-white/40 text-base font-bold hover:bg-white/10 transition flex items-center gap-2"><i class="bi bi-skip-forward-fill"></i> Skip</button><button onclick="nextQuestion()" id="btn-next-q" class="px-8 py-3 bg-brand-accent/20 border border-brand-accent/30 rounded-xl text-brand-accent text-base font-bold hover:bg-brand-accent/30 transition hidden flex items-center gap-2"><i class="bi bi-arrow-right"></i> Next</button></div></div>
-            <!-- TALLY --><div id="state-tally" class="flex-1 flex flex-col items-center justify-center hidden"><div class="text-lg font-bold text-white/30 uppercase tracking-[.2em] mb-6" id="tally-heading">Scores So Far</div><div class="w-full max-w-md space-y-2 mb-8" id="tally-board"></div><button onclick="nextQuestion()" class="px-10 py-4 bg-brand-accent rounded-2xl text-black font-extrabold text-xl hover:bg-brand-accent/80 transition flex items-center gap-2"><i class="bi bi-arrow-right text-2xl"></i> Continue</button></div>
-            <!-- PODIUM --><div id="state-podium" class="flex-1 flex flex-col items-center justify-center hidden"><div class="text-lg font-bold text-white/30 uppercase tracking-[.2em] mb-8"><i class="bi bi-trophy-fill text-amber-400"></i> Final Results</div><div class="flex items-end gap-10 mb-10" id="podium-display"></div><button onclick="endGame()" class="px-10 py-4 bg-brand-accent rounded-2xl text-black font-extrabold text-xl hover:bg-brand-accent/80 transition flex items-center gap-2"><i class="bi bi-check-lg text-2xl"></i> Close & Save</button></div>
-        </div>
-        <div class="w-64 border-l border-white/5 p-4 overflow-y-auto shrink-0 bg-brand-dark/30"><h3 class="text-sm font-extrabold text-white/70 mb-3 flex items-center gap-2"><i class="bi bi-lightning-fill text-amber-400"></i> Live</h3><div id="overlay-scores" class="space-y-1.5"></div><div class="mt-4 pt-3 border-t border-white/5"><h3 class="text-sm font-extrabold text-white/70 mb-2 flex items-center gap-2"><i class="bi bi-trophy-fill text-amber-400"></i> All-Time</h3><div id="overlay-leaders" class="space-y-1.5"></div></div></div>
-    </div>
-</div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-// FIREBASE
+// INIT NAV FROM CONFIG
 // ═══════════════════════════════════════════════════════════════
-const firebaseConfig={apiKey:"AIzaSyDXYLxPZRkb9IZSilqYqqRKnUsmJyXL_ss",authDomain:"intake-25g-trivia.firebaseapp.com",databaseURL:"https://intake-25g-trivia-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"intake-25g-trivia",storageBucket:"intake-25g-trivia.firebasestorage.app",messagingSenderId:"138198468293",appId:"1:138198468293:web:cf8f5d589a693dd2e852ac"};
-if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
-const db=firebase.database();
+document.getElementById('nav-intake').textContent = CONFIG.intake;
+document.getElementById('nav-college').textContent = CONFIG.college;
+document.getElementById('nav-room').textContent = CONFIG.room;
+document.getElementById('tile-intake').textContent = CONFIG.intake;
+document.getElementById('tile-course').textContent = CONFIG.course;
+document.getElementById('tile-trainer-name').textContent = CONFIG.trainer;
+document.getElementById('tile-trainer-img').src = CONFIG.trainerImg;
+document.title = `Intake ${CONFIG.intake} | ${CONFIG.college}`;
 
-// Seed leaderboard with latest scores
-db.ref('leaderboard').set({Wally:6,Selvi:4,Clare:3,Joey:2,Jarrahd:2,Alex:1});
-
-// ═══════════════════════════════════════════════════════════════
-// GOOGLE SHEETS INTEGRATION
-// The dashboard reads student data from a published Google Sheet.
-// INSTRUCTIONS:
-// 1. Create a Google Sheet with columns:
-//    Nick | ID | Att | S01 | S02 | S03 | S04 | S05 | S06 | S07
-// 2. File > Share > Publish to web > Sheet1 > CSV > Publish
-// 3. Copy the CSV URL and paste it below
-// ═══════════════════════════════════════════════════════════════
-const SHEETS_CSV_URL = ''; // PASTE YOUR PUBLISHED CSV URL HERE
-// Example: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vXXX.../pub?gid=0&single=true&output=csv'
+// Trainer in navbar
+document.getElementById('nav-trainer').innerHTML = `
+    <img src="${CONFIG.trainerImg}" alt="${CONFIG.trainer}" class="w-14 h-14 rounded-full object-cover border-[3px] border-brand-accent/50">
+    <div class="leading-tight">
+        <div class="text-lg font-bold text-white/90">${CONFIG.trainer}</div>
+        <div class="text-xs text-brand-accent font-bold uppercase tracking-wider">Trainer</div>
+    </div>`;
 
 // ═══════════════════════════════════════════════════════════════
-// DATA (defaults — overridden by Google Sheet if URL set)
+// CLOCK
 // ═══════════════════════════════════════════════════════════════
-const CLASS_DAYS=[1,2,5],ANCHOR={date:'2026-03-31',count:60},HOLIDAYS=[{start:'2026-04-03',end:'2026-04-17'}];
-const TIMER_SECONDS=15,PRESENTER='Tim',COURSE_END=new Date('2026-05-15'),BREAK_START=new Date('2026-04-03');
-const SUBJECTS=[
-    {code:'S01',short:'Clients',title:'Clients & Industry',icon:'👥',done:true},
-    {code:'S02',short:'Front End',title:'Front End Dev',icon:'🎨',done:true},
-    {code:'S03',short:'Back End',title:'Back End Dev',icon:'⚙️',done:true},
-    {code:'S04',short:'Deployment',title:'Deployment',icon:'🚀',done:true},
-    {code:'S05',short:'Security',title:'Privacy & Security',icon:'🔒',done:true},
-    {code:'S06',short:'Blockchain',title:'Blockchain',icon:'⛓️',done:false},
-    {code:'S07',short:'AI / ML',title:'AI / Machine Learning',icon:'🤖',done:false},
-];
-let STUDENTS=[
-    {nick:'Neil',id:61664,att:50,subs:{S01:100,S02:100,S03:97,S04:100,S05:87,S06:0,S07:0}},
-    {nick:'Wally',id:61704,att:50,subs:{S01:100,S02:100,S03:95,S04:100,S05:0,S06:0,S07:0}},
-    {nick:'Joey',id:61619,att:45,subs:{S01:100,S02:70,S03:6,S04:100,S05:75,S06:66,S07:77}},
-    {nick:'Selvi',id:61501,att:44,subs:{S01:100,S02:100,S03:95,S04:100,S05:87,S06:66,S07:40}},
-    {nick:'Alex',id:61636,att:41,subs:{S01:100,S02:66,S03:68,S04:100,S05:0,S06:0,S07:0}},
-    {nick:'Jarrahd',id:61701,att:39,subs:{S01:100,S02:100,S03:86,S04:100,S05:75,S06:66,S07:77}},
-    {nick:'Chelsea',id:61650,att:38,subs:{S01:100,S02:100,S03:95,S04:100,S05:87,S06:66,S07:77}},
-    {nick:'Clare',id:61483,att:36,subs:{S01:100,S02:100,S03:93,S04:100,S05:75,S06:66,S07:77}},
-    {nick:'Jhersy',id:61541,att:30,subs:{S01:0,S02:0,S03:0,S04:0,S05:0,S06:0,S07:0}},
-    {nick:'Atim',id:0,att:20,subs:{S01:0,S02:0,S03:0,S04:0,S05:0,S06:0,S07:0}},
-    {nick:'Emma',id:0,att:12,subs:{S01:0,S02:0,S03:0,S04:0,S05:0,S06:0,S07:0}},
-    {nick:'Kris',id:61079,att:8,subs:{S01:0,S02:0,S03:0,S04:0,S05:0,S06:0,S07:0}},
-    {nick:'Visvakala',id:0,att:8,subs:{S01:0,S02:0,S03:0,S04:0,S05:0,S06:0,S07:0}},
-    {nick:'Joe B',id:0,att:1,subs:{S01:0,S02:0,S03:0,S04:0,S05:0,S06:0,S07:0}},
-];
-const AI_NEWS=[
-    {title:'Google DeepMind: Gemini 2.0',url:'https://deepmind.google/technologies/gemini/',img:'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=100&h=64&fit=crop',tag:'News'},
-    {title:'What Is ML? (IBM)',url:'https://www.ibm.com/think/topics/machine-learning',img:'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=100&h=64&fit=crop',tag:'Learn'},
-    {title:'ChatGPT & AI Search',url:'https://openai.com/blog',img:'https://images.unsplash.com/photo-1684391507090-bfaa0a57cd3f?w=100&h=64&fit=crop',tag:'News'},
-    {title:'Neural Networks (3Blue1Brown)',url:'https://www.youtube.com/watch?v=aircAruvnKk',img:'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=100&h=64&fit=crop',tag:'Video'},
-    {title:'Australia AI Plan — $1.3B',url:'https://www.industry.gov.au/science-technology-and-innovation/technology/artificial-intelligence',img:'https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=100&h=64&fit=crop',tag:'Gov'},
-    {title:'TensorFlow.js — Browser ML',url:'https://www.tensorflow.org/js',img:'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=100&h=64&fit=crop',tag:'Tool'},
-    {title:'RAG: AI + Your Data',url:'https://aws.amazon.com/what-is/retrieval-augmented-generation/',img:'https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=100&h=64&fit=crop',tag:'Learn'},
-    {title:'Hugging Face Models',url:'https://huggingface.co/',img:'https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=100&h=64&fit=crop',tag:'Tool'},
-    {title:'On-Device ML',url:'https://developers.google.com/ml-kit',img:'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=100&h=64&fit=crop',tag:'Learn'},
-    {title:'Kaggle — Free ML Courses',url:'https://www.kaggle.com/learn',img:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=100&h=64&fit=crop',tag:'Learn'},
-];
+function updateClock() {
+    const n = new Date();
+    const h = String(n.getHours()).padStart(2,'0');
+    const m = String(n.getMinutes()).padStart(2,'0');
+    const s = String(n.getSeconds()).padStart(2,'0');
+    const d = n.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+    document.getElementById('header-clock').innerHTML =
+        `<i class="bi bi-calendar3 text-white/25"></i><span class="text-white/40">${d}</span>` +
+        `<span class="text-white/10 mx-1">|</span>` +
+        `<i class="bi bi-clock text-white/25"></i><span class="text-lg font-semibold">${h}<span class="blink">:</span>${m}<span class="blink">:</span>${s}</span>`;
+    document.getElementById('tile-date').textContent = d;
+}
+updateClock();
+setInterval(updateClock, 1000);
 
 // ═══════════════════════════════════════════════════════════════
-// QUESTION BANK — every 3rd Q is classmate
+// CLASS COUNTER
 // ═══════════════════════════════════════════════════════════════
-const Q_CLASSMATE=[
-{q:"Jarrahd's freelance brand?",opts:['JG Web & Cloud Solutions','Gibson Digital','Jarrahd Dev Studio','CloudFirst WA'],ans:0},
-{q:'Wally originally from?',opts:['Ireland','England','Scotland','Wales'],ans:2},
-{q:'Chelsea has how many kids?',opts:['2','3','4','5'],ans:2},
-{q:'Alex plays which sport?',opts:['Football','Cricket','Basketball','Tennis'],ans:1},
-{q:'Clare worked in before IT?',opts:['Hospitality','Mining','Healthcare','Education'],ans:1},
-{q:'Joey works at?',opts:['JB Hi-Fi','EB Games','Officeworks','Good Guys'],ans:1},
-{q:'Selvi has how many children?',opts:['1 son','2 daughters','A son and a daughter','3 kids'],ans:2},
-{q:'Selvi applied to work at?',opts:['Rio Tinto','Woodside','BHP','Fortescue'],ans:2},
-{q:"Kris's previous trainer?",opts:['Tim','Nidup','Jaxson','Sarah'],ans:2},
-{q:"Duke's litter size?",opts:['6','7','8','9'],ans:3},
-{q:'Tim lived in before Perth?',opts:['Sydney','Brisbane','Melbourne','Adelaide'],ans:2},
-{q:'Chelsea from which NZ island?',opts:['South Island','North Island','Stewart Island','Waiheke Island'],ans:1},
-{q:'Chelsea lives near?',opts:['Fremantle','Joondalup','Mandurah','Armadale'],ans:2},
-{q:"Jarrahd's first job?",opts:["McDonald's",'KFC',"Hungry Jack's",'Subway'],ans:2},
-{q:"Neil's favourite game?",opts:['Chess','Crosswords','Sudoku','Wordle'],ans:2},
-{q:'Neil does besides IT?',opts:['Coaching','Public speaking','Music','Photography'],ans:1},
-{q:'Alex top student in?',opts:['Maths & Applied IT','English & Science','Maths & Physics','IT & Design'],ans:0},
-{q:"Alex's school award?",opts:['Dux','Proxime Accessit','Valedictorian','Head Prefect'],ans:1},
-{q:"Tim's favourite food?",opts:['Pizza','Spag bol or chicken nuggets','Fish & chips','Tacos'],ans:1},
-{q:"Clare's mum's side-hustle?",opts:['Baking','A recipe business','Dog walking','Tutoring'],ans:1},
-{q:'Clare visited this year?',opts:['Thailand','Japan','Singapore','Bali'],ans:2},
-{q:"Wally's fave sport?",opts:['Golf','Lawn bowls','Darts','Cricket'],ans:1},
-{q:"Selvi's diet preference?",opts:['Vegan','Vegetarian','Pescatarian','Gluten-free'],ans:1},
-{q:"Jhersy's trade background?",opts:['Electrician','Florist','Carpenter','Chef'],ans:1},
-{q:"Tim's middle name?",opts:['James','Francis','Michael','Patrick'],ans:1},
-];
-const Q_OTHER=[
-{cat:'course',q:'Init Node.js project?',opts:['npm init -y','node create','npm start','node init'],ans:0},
-{cat:'course',q:'Express GET handler?',opts:['app.get()','app.fetch()','app.read()','app.pull()'],ans:0},
-{cat:'course',q:'"M" in MVC?',opts:['Model','Module','Method','Middleware'],ans:0},
-{cat:'course',q:'HTTP 404 means?',opts:['Unauthorised','Not Found','Server Error','Redirect'],ans:1},
-{cat:'course',q:'Git stage all?',opts:['git push','git add .','git commit','git stage'],ans:1},
-{cat:'course',q:'EJS stands for?',opts:['Embedded JavaScript','Extended JSON Schema','Express JS System','Elastic JavaScript'],ans:0},
-{cat:'course',q:'REST stands for?',opts:['Representational State Transfer','Remote Execution Server Tech','Realtime Event Stream','Request-Execute-Send-Terminate'],ans:0},
-{cat:'course',q:'CRUD stands for?',opts:['Create Read Update Delete','Connect Render Upload Deploy','Code Review Unit Debug','Cache Refresh Undo Display'],ans:0},
-{cat:'course',q:'HTTP update method?',opts:['POST','GET','PUT','DELETE'],ans:2},
-{cat:'course',q:'Default Express port?',opts:['8080','3000','5000','443'],ans:1},
-{cat:'webdev',q:'HTML stands for?',opts:['Hyper Text Markup Language','High Tech Modern Language','Hyper Transfer Markup Language','Home Tool Markup Language'],ans:0},
-{cat:'webdev',q:'CSS stands for?',opts:['Cascading Style Sheets','Creative Style System','Computer Style Sheets','Coded Style Syntax'],ans:0},
-{cat:'webdev',q:'JS constant keyword?',opts:['var','let','const','static'],ans:2},
-{cat:'webdev',q:'=== checks?',opts:['Value only','Type only','Value and type','Reference'],ans:2},
-{cat:'webdev',q:'JSON stands for?',opts:['Java Standard Object Notation','JavaScript Object Notation','Java Syntax Object Naming','JS Open Network'],ans:1},
-{cat:'webdev',q:'DOM stands for?',opts:['Data Object Model','Document Object Model','Digital Output Method','Display Object Manager'],ans:1},
-{cat:'webdev',q:'React state hook?',opts:['useEffect','useState','useRef','useMemo'],ans:1},
-{cat:'webdev',q:'Node.js engine?',opts:['Python','V8','Ruby','Java VM'],ans:1},
-{cat:'webdev',q:'API stands for?',opts:['Application Programming Interface','Advanced Program Integration','Application Process Interface','Automated Programming Interface'],ans:0},
-{cat:'webdev',q:'git init does?',opts:['Clones repo','Creates new repo','Pushes code','Merges branches'],ans:1},
-{cat:'webdev',q:'z-index controls?',opts:['Zoom','Stack order','Height','Rotation'],ans:1},
-{cat:'webdev',q:'CORS means?',opts:['Code Optimization','Cross-Origin Resource Sharing','Central Object Request','Custom Origin Response'],ans:1},
-{cat:'webdev',q:'Semantic HTML?',opts:['Using CSS','Meaningful tags','JS code','Inline styles'],ans:1},
-{cat:'webdev',q:'Virtual DOM is?',opts:['Database','Lightweight copy','CSS framework','Server component'],ans:1},
-{cat:'aussie',q:"What's a 'barbie'?",opts:['A doll','A BBQ','A beach','A bar'],ans:1},
-{cat:'aussie',q:'Baby kangaroo?',opts:['Cub','Kit','Joey','Pup'],ans:2},
-{cat:'aussie',q:'Quokka island?',opts:['Tasmania','Barrier Reef','Rottnest','Kangaroo Island'],ans:2},
-{cat:'aussie',q:'Biggest state?',opts:['QLD','NSW','NT','WA'],ans:3},
-{cat:'aussie',q:'Vegemite = ?',opts:['Vegetables','Yeast extract','Beef extract','Malt'],ans:1},
-{cat:'aussie',q:'AFL team size?',opts:['13','15','18','22'],ans:2},
-{cat:'aussie',q:'Opera House architect?',opts:['F.L. Wright','Jørn Utzon','Renzo Piano','Zaha Hadid'],ans:1},
-{cat:'aussie',q:"Aussie 'thongs'?",opts:['Underwear','Flip-flops','Shorts','Singlets'],ans:1},
-{cat:'aussie',q:'AFL goal points?',opts:['3','4','5','6'],ans:3},
-{cat:'general',q:'Capital of Australia?',opts:['Sydney','Melbourne','Canberra','Perth'],ans:2},
-{cat:'general',q:'First iPhone year?',opts:['2005','2006','2007','2008'],ans:2},
-{cat:'general',q:'WWW invented?',opts:['1985','1989','1993','1995'],ans:1},
-{cat:'general',q:'Biggest ocean?',opts:['Atlantic','Indian','Arctic','Pacific'],ans:3},
-];
+function isHoliday(d) {
+    return CONFIG.holidays.some(h => {
+        const s = new Date(h.start), e = new Date(h.end);
+        s.setHours(0,0,0,0); e.setHours(0,0,0,0);
+        return d >= s && d <= e;
+    });
+}
+function isClassDay(d) { return CONFIG.classDays.includes(d.getDay()) && !isHoliday(d); }
+
+function getCourseProgress() {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const start = new Date(CONFIG.startDate); start.setHours(0,0,0,0);
+    const end = new Date(CONFIG.endDate); end.setHours(0,0,0,0);
+
+    // Count total class days and elapsed class days
+    let total = 0, elapsed = 0;
+    let d = new Date(start);
+    while (d <= end) {
+        if (isClassDay(d)) {
+            total++;
+            if (d <= today) elapsed++;
+        }
+        d.setDate(d.getDate() + 1);
+    }
+
+    // Count remaining days from today
+    let remaining = 0;
+    d = new Date(today); d.setDate(d.getDate() + 1);
+    while (d <= end) {
+        if (isClassDay(d)) remaining++;
+        d.setDate(d.getDate() + 1);
+    }
+
+    const isToday = isClassDay(today) && today >= start && today <= end;
+    const weeksLeft = Math.ceil(remaining / CONFIG.classDays.length);
+    const pct = total > 0 ? Math.round(elapsed / total * 100) : 0;
+
+    return { total, elapsed, remaining, isToday, weeksLeft, pct };
+}
+
+function renderClassBadge() {
+    const info = getCourseProgress();
+    const el = document.getElementById('class-badge');
+    if (info.isToday) {
+        el.innerHTML = `<div class="bg-brand-accent/15 border border-brand-accent/30 rounded-xl px-5 py-1.5 text-center">
+            <div class="text-[8px] text-white/40 font-bold uppercase tracking-widest">Class</div>
+            <div class="text-3xl font-black text-brand-accent mono leading-tight">#${info.elapsed}</div></div>`;
+    } else {
+        el.innerHTML = `<div class="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-1.5 text-center">
+            <div class="text-sm font-extrabold text-red-400">NO CLASS TODAY</div></div>`;
+    }
+}
+
+function renderProgress() {
+    const info = getCourseProgress();
+    document.getElementById('prog-label').textContent = `Day ${info.elapsed} of ${info.total}`;
+    document.getElementById('prog-pct').textContent = info.pct + '%';
+    document.getElementById('prog-bar').style.width = info.pct + '%';
+    document.getElementById('prog-start').textContent = new Date(CONFIG.startDate).toLocaleDateString('en-AU',{day:'numeric',month:'short'});
+    document.getElementById('prog-end').textContent = new Date(CONFIG.endDate).toLocaleDateString('en-AU',{day:'numeric',month:'short'});
+    document.getElementById('prog-classes').textContent = info.elapsed;
+    document.getElementById('prog-remaining').textContent = info.remaining;
+    document.getElementById('prog-weeks').textContent = info.weeksLeft;
+}
 
 // ═══════════════════════════════════════════════════════════════
 // GOOGLE SHEETS LOADER
+// Sheet columns: Date | Trainer | Topics | Notes | Attendance
+// Date format: DD/MM/YYYY or YYYY-MM-DD
+// Topics: semicolon-separated list e.g. "APIs; REST; Express routes"
+// Attendance: number or comma-separated names
 // ═══════════════════════════════════════════════════════════════
-async function loadFromSheets(){
-    if(!SHEETS_CSV_URL)return;
-    try{
-        const res=await fetch(SHEETS_CSV_URL);
-        const text=await res.text();
-        const rows=text.trim().split('\n').slice(1); // skip header
-        STUDENTS=rows.map(row=>{
-            const c=row.split(',').map(s=>s.trim());
-            return{nick:c[0],id:parseInt(c[1])||0,att:parseInt(c[2])||0,subs:{S01:parseInt(c[3])||0,S02:parseInt(c[4])||0,S03:parseInt(c[5])||0,S04:parseInt(c[6])||0,S05:parseInt(c[7])||0,S06:parseInt(c[8])||0,S07:parseInt(c[9])||0}};
-        }).filter(s=>s.nick);
-        renderAll();
-    }catch(e){console.warn('Sheets load failed, using defaults:',e);}
-}
+let lastData = null;
 
-// ═══════════════════════════════════════════════════════════════
-// CLASS COUNTER + UTILS
-// ═══════════════════════════════════════════════════════════════
-function isHoliday(d){return HOLIDAYS.some(h=>{const s=new Date(h.start),e=new Date(h.end);s.setHours(0,0,0,0);e.setHours(0,0,0,0);return d>=s&&d<=e;});}
-function isClassDay(d){return CLASS_DAYS.includes(d.getDay())&&!isHoliday(d);}
-function getClassInfo(){const today=new Date();today.setHours(0,0,0,0);const ref=new Date(ANCHOR.date);ref.setHours(0,0,0,0);let count=ANCHOR.count;if(today>ref){let d=new Date(ref);d.setDate(d.getDate()+1);while(d<=today){if(isClassDay(d))count++;d.setDate(d.getDate()+1);}}else if(today<ref){let d=new Date(ref);while(d>today){if(isClassDay(d))count--;d.setDate(d.getDate()-1);}}const tc=isClassDay(today);let next=new Date(today);next.setDate(next.getDate()+1);while(!isClassDay(next))next.setDate(next.getDate()+1);return{number:tc?count:null,isClass:tc,nextNum:count+1,nextStr:next.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'}),count};}
-function renderClassBadge(){const info=getClassInfo(),el=document.getElementById('class-badge');if(info.isClass){el.innerHTML=`<div class="bg-brand-accent/15 border border-brand-accent/30 rounded-xl px-5 py-1.5 text-center"><div class="text-[8px] text-white/40 font-bold uppercase tracking-widest">Class</div><div class="text-3xl font-black text-brand-accent mono leading-tight">#${info.number}</div></div>`;document.getElementById('att-total').textContent=info.number+' classes';window._cc=info.number;}else{el.innerHTML=`<div class="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-1.5 text-center"><div class="text-sm font-extrabold text-red-400">NO CLASS</div><div class="text-[10px] text-white/30">Next #${info.nextNum} · ${info.nextStr}</div></div>`;document.getElementById('att-total').textContent=info.count+' classes';window._cc=info.count;}}
-function updateCountdowns(){const now=new Date();now.setHours(0,0,0,0);const bd=Math.ceil((BREAK_START-now)/864e5),cd=Math.ceil((COURSE_END-now)/864e5);const bt=bd>0?bd+'d':bd>=-14?'NOW!':'';const ct=cd>0?cd+'d':'Done!';document.getElementById('break-countdown').textContent=bt;document.getElementById('course-countdown').textContent=ct;const b2=document.getElementById('break-countdown2');if(b2)b2.textContent=bt;const c2=document.getElementById('course-countdown2');if(c2)c2.textContent=ct;}
-function updateClock(){const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0'),d=n.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});document.getElementById('header-clock').innerHTML=`<i class="bi bi-calendar3 text-white/25"></i><span class="text-white/40">${d}</span><span class="text-white/10 mx-1">|</span><i class="bi bi-clock text-white/25"></i><span class="text-lg font-semibold">${h}<span class="blink">:</span>${m}<span class="blink">:</span>${s}</span>`;}
-function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;}
-function todayRoomId(){const d=new Date();return'room-'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function todayKey(){const d=new Date();return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');}
-function showState(id){['lobby','question','scoring','tally','podium'].forEach(s=>document.getElementById('state-'+s).classList.toggle('hidden',s!==id));}
-function catLabel(c){return{classmate:'👥 Classmate',course:'📚 Course',webdev:'💻 Web Dev',aussie:'🇦🇺 Aussie',general:'🌐 General'}[c]||c;}
-function pctColor(p){return p>=80?'#34d399':p>=60?'#22d3ee':p>=40?'#fbbf24':p>0?'#fb923c':'#475569';}
-function overallPct(s){const v=Object.values(s.subs);return v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length):0;}
+async function loadFromSheet() {
+    if (!CONFIG.sheetUrl) return;
+    try {
+        const res = await fetch(CONFIG.sheetUrl);
+        const text = await res.text();
+        const rows = text.trim().split('\n').slice(1); // skip header
+        if (!rows.length) return;
 
-// ═══════════════════════════════════════════════════════════════
-// RENDER
-// ═══════════════════════════════════════════════════════════════
-function renderAttendance(){const cn=window._cc||60;const sorted=[...STUDENTS].sort((a,b)=>(b.att/cn)-(a.att/cn));const m=['👑','🥈','🥉'];document.getElementById('att-list').innerHTML=sorted.map((s,i)=>{const p=cn>0?Math.round(s.att/cn*100):0;return`<div class="flex items-center gap-2 py-1 px-2 rounded-md ${i<3?'bg-white/[0.03]':''}"><span class="w-7 text-center text-lg">${i<3?m[i]:'<span class="text-white/15 mono text-sm">'+(i+1)+'</span>'}</span><span class="flex-1 text-lg font-bold ${i<3?'text-white/90':'text-white/55'} truncate">${s.nick}</span><span class="text-lg mono font-black w-9 text-right" style="color:${pctColor(p)}">${s.att}</span><span class="text-base mono font-bold w-12 text-right" style="color:${pctColor(p)}">${p}%</span></div>`;}).join('');}
-function renderHubProgress(){const sorted=[...STUDENTS].sort((a,b)=>overallPct(b)-overallPct(a));document.getElementById('hub-list').innerHTML=sorted.map(s=>{const p=overallPct(s);return`<div class="flex items-center gap-3 py-1"><span class="text-lg font-bold text-white/55 w-24 truncate">${s.nick}</span><div class="flex-1 h-3 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:${p}%;background:${pctColor(p)}"></div></div><span class="text-base mono font-black w-12 text-right" style="color:${pctColor(p)}">${p}%</span></div>`;}).join('');}
-function renderSubjectAwards(){document.getElementById('subject-awards').innerHTML=SUBJECTS.map(sub=>{const fin=STUDENTS.filter(s=>(s.subs[sub.code]||0)>=100);const prog=STUDENTS.filter(s=>{const p=s.subs[sub.code]||0;return p>0&&p<100;}).sort((a,b)=>(b.subs[sub.code]||0)-(a.subs[sub.code]||0));let body='';if(fin.length===STUDENTS.length)body='<span class="text-[10px] text-brand-accent font-bold">🎉 All!</span>';else{if(fin.length)body+=`<span class="text-[10px] text-brand-accent">🎉 ${fin.map(s=>s.nick).join(', ')}</span> `;if(prog.length)body+=prog.map(s=>{const p=s.subs[sub.code]||0;return`<span class="text-[10px] text-white/35">${s.nick} <span class="mono" style="color:${pctColor(p)}">${p}%</span></span>`;}).join(' · ');}return`<div class="flex items-start gap-2 py-1 px-1.5 rounded-md"><span class="text-sm shrink-0 w-5">${sub.icon}</span><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 mb-0.5"><span class="text-xs font-bold text-white/70">${sub.short}</span>${sub.done?'<span class="text-[7px] bg-brand-accent/15 text-brand-accent px-1 py-px rounded-full font-bold">DONE</span>':'<span class="text-[7px] bg-amber-500/15 text-amber-400 px-1 py-px rounded-full font-bold">NOW</span>'}</div><div class="leading-tight">${body}</div></div></div>`;}).join('');}
-function renderAINews(){const items=AI_NEWS.map(n=>`<a href="${n.url}" target="_blank" class="flex gap-2 py-1 px-1 rounded-md hover:bg-white/[0.03] transition group"><img src="${n.img}" alt="" class="w-14 h-10 rounded-md object-cover shrink-0 border border-white/5 group-hover:border-purple-500/30 transition"><div class="min-w-0 flex-1"><div class="text-xs font-bold text-white/65 leading-snug group-hover:text-purple-300 transition line-clamp-2">${n.title}</div><span class="text-[8px] font-bold uppercase ${n.tag==='News'?'text-purple-400/40':n.tag==='Learn'?'text-brand-accent2/40':n.tag==='Video'?'text-pink-400/40':'text-brand-accent/40'}">${n.tag}</span></div></a>`).join('');document.getElementById('ai-news').innerHTML=items+items;}
-function renderAll(){renderClassBadge();renderAttendance();renderHubProgress();renderSubjectAwards();}
+        // Parse all rows
+        const entries = rows.map(row => {
+            // Handle quoted CSV fields
+            const cols = row.match(/(".*?"|[^,]+)/g)?.map(s => s.replace(/^"|"$/g,'').trim()) || [];
+            return {
+                date:       cols[0] || '',
+                trainer:    cols[1] || '',
+                topics:     cols[2] || '',
+                notes:      cols[3] || '',
+                attendance: cols[4] || '',
+            };
+        });
 
-// ═══════════════════════════════════════════════════════════════
-// FIREBASE LIVE
-// ═══════════════════════════════════════════════════════════════
-function loadTriviaLeaders(){db.ref('leaderboard').orderByValue().limitToLast(5).on('value',snap=>{const el=document.getElementById('trivia-leaders-full');if(!snap.exists()){el.innerHTML='<div class="text-[10px] text-white/20 text-center py-1">No scores yet</div>';return;}const e=[];snap.forEach(c=>e.push({name:c.key,pts:c.val()}));e.sort((a,b)=>b.pts-a.pts);const m=['🥇','🥈','🥉'],c=['text-amber-300','text-slate-300','text-orange-400','text-white/40','text-white/25'];el.innerHTML=e.map((x,i)=>`<div class="flex items-center justify-between py-0.5 px-1"><span class="text-xs font-bold ${c[i]}">${m[i]||''} ${x.name}</span><span class="text-[10px] mono font-black ${c[i]}">${x.pts}pts</span></div>`).join('');});}
-function loadTodayCheckins(){db.ref('attendance/'+todayKey()).on('value',snap=>{const d=snap.val()||{},n=Object.keys(d);const el=document.getElementById('today-checkins'),ct=document.getElementById('checkin-count');if(n.length){el.classList.remove('hidden');ct.textContent=n.length;}else el.classList.add('hidden');});}
+        // Find today's entry (most recent if multiple)
+        const todayStr = new Date().toLocaleDateString('en-AU'); // DD/MM/YYYY
+        const todayISO = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        let todayEntry = entries.reverse().find(e =>
+            e.date === todayStr || e.date === todayISO ||
+            e.date === new Date().toLocaleDateString('en-AU',{day:'2-digit',month:'2-digit',year:'numeric'})
+        );
 
-// ═══════════════════════════════════════════════════════════════
-// TRIVIA ENGINE — Speed-based, every 3rd Q = classmate, tally every 5
-// ═══════════════════════════════════════════════════════════════
-let roomId='',questions=[],currentQ=0,timerInterval=null,timeLeft=TIMER_SECONDS;
-let gameScores={},awardStep=0,playersInRoom={},answersThisQ={};
+        // If no exact date match, use the most recent entry
+        if (!todayEntry && entries.length) todayEntry = entries[0];
+        if (!todayEntry) return;
 
-function generateQuestions(){
-    // Every 3rd question (idx 2,5,8,11,14,17) = classmate (7 classmate Qs)
-    // Other 13 = mix of course/webdev/aussie/general
-    const cm=shuffle(Q_CLASSMATE).slice(0,7);
-    const other=shuffle(Q_OTHER).slice(0,13);
-    const result=[];let ci=0,oi=0;
-    for(let i=0;i<20;i++){
-        if((i+1)%3===0&&ci<cm.length){result.push({...cm[ci],cat:'classmate'});ci++;}
-        else if(oi<other.length){result.push(other[oi]);oi++;}
-        else if(ci<cm.length){result.push({...cm[ci],cat:'classmate'});ci++;}
+        lastData = todayEntry;
+        renderSheetData(todayEntry);
+    } catch(e) {
+        console.warn('Sheet load failed:', e);
     }
-    return result;
 }
 
-function openOverlay(){document.getElementById('trivia-overlay').classList.add('active');}
-function closeOverlay(){if(confirm('Close trivia?')){document.getElementById('trivia-overlay').classList.remove('active');if(roomId)db.ref('rooms/'+roomId+'/players').off();loadTriviaLeaders();}}
+function renderSheetData(entry) {
+    // Topics
+    if (entry.topics) {
+        const topics = entry.topics.split(/[;|]/).map(t => t.trim()).filter(Boolean);
+        document.getElementById('tile-topics').innerHTML = topics.map((t, i) =>
+            `<div class="flex items-center gap-3 py-2 fade-in" style="animation-delay:${i*100}ms">
+                <span class="text-3xl">📌</span>
+                <span class="text-3xl font-bold text-white/80">${t}</span>
+            </div>`
+        ).join('');
+    }
 
-function startLobby(){
-    roomId=todayRoomId();questions=generateQuestions();currentQ=0;gameScores={};awardStep=0;
-    db.ref('rooms/'+roomId).set({state:'lobby',currentQ:0,questions:questions.map(q=>({q:q.q,opts:q.opts,ans:q.ans,cat:q.cat})),presenter:PRESENTER,gameScores:{}});
-    db.ref('rooms/'+roomId+'/players').on('value',snap=>{playersInRoom=snap.val()||{};renderLobbyPlayers();});
-    document.getElementById('overlay-room').textContent=roomId;openOverlay();showState('lobby');
+    // Attendance
+    if (entry.attendance) {
+        const val = entry.attendance.trim();
+        // Could be a number or comma-separated names
+        if (/^\d+$/.test(val)) {
+            document.getElementById('att-count').textContent = val;
+        } else {
+            const names = val.split(',').map(n => n.trim()).filter(Boolean);
+            document.getElementById('att-count').textContent = names.length;
+            // Optionally show names below
+            const container = document.getElementById('tile-attendance');
+            container.innerHTML = `
+                <div class="text-[5rem] font-black text-brand-accent leading-none">${names.length}</div>
+                <div class="text-xl text-white/30 font-bold mt-1">present today</div>
+                <div class="flex flex-wrap gap-2 mt-3 justify-center max-h-24 overflow-y-auto">
+                    ${names.map(n => `<span class="text-base bg-brand-accent/10 text-brand-accent/70 px-3 py-1 rounded-full font-semibold">${n}</span>`).join('')}
+                </div>`;
+        }
+    }
+
+    // Notes / Announcements
+    if (entry.notes) {
+        document.getElementById('tile-notes').innerHTML = `
+            <div class="text-2xl font-semibold text-white/70 leading-relaxed">${entry.notes}</div>`;
+    }
+
+    // Trainer override (if different from config)
+    if (entry.trainer && entry.trainer !== CONFIG.trainer) {
+        document.getElementById('tile-trainer-name').textContent = entry.trainer;
+    }
 }
-function renderLobbyPlayers(){document.getElementById('lobby-players').innerHTML=Object.keys(playersInRoom).map(n=>`<div class="slide-up px-6 py-3 bg-brand-accent/10 border border-brand-accent/20 rounded-xl text-brand-accent font-bold text-lg">${n}</div>`).join('');document.getElementById('lobby-count').textContent=Object.keys(playersInRoom).length+' player'+(Object.keys(playersInRoom).length!==1?'s':'');}
-function beginGame(){db.ref('rooms/'+roomId).update({state:'question',currentQ:0});showQuestion(0);}
-
-function showQuestion(idx){
-    currentQ=idx;const q=questions[idx];answersThisQ={};awardStep=0;
-    document.getElementById('q-counter').textContent=`Q${idx+1}/20`;
-    document.getElementById('q-cat').textContent=catLabel(q.cat);
-    document.getElementById('q-text').textContent=q.q;
-    document.getElementById('answer-count').textContent='0';
-    document.getElementById('player-total').textContent=Object.keys(playersInRoom).length;
-    const oc=['bg-red-500/10 border-red-500/20 text-red-300','bg-blue-500/10 border-blue-500/20 text-blue-300','bg-amber-500/10 border-amber-500/20 text-amber-300','bg-green-500/10 border-green-500/20 text-green-300'];
-    document.getElementById('q-options').innerHTML=q.opts.map((o,i)=>`<div class="p-5 rounded-xl border text-center font-bold text-xl ${oc[i]}">${o}</div>`).join('');
-    timeLeft=TIMER_SECONDS;document.getElementById('timer-num').textContent=timeLeft;document.getElementById('timer-bar').style.width='100%';
-    document.getElementById('timer-num').className='text-6xl font-black mono text-brand-accent';
-    if(timerInterval)clearInterval(timerInterval);
-    timerInterval=setInterval(()=>{timeLeft--;document.getElementById('timer-num').textContent=timeLeft;document.getElementById('timer-bar').style.width=(timeLeft/TIMER_SECONDS*100)+'%';if(timeLeft<=5)document.getElementById('timer-num').className='text-6xl font-black mono text-red-400';if(timeLeft<=0){clearInterval(timerInterval);goToScoring();}},1000);
-    db.ref('rooms/'+roomId+'/answers/'+idx).on('value',snap=>{answersThisQ=snap.val()||{};document.getElementById('answer-count').textContent=Object.keys(answersThisQ).length;if(Object.keys(answersThisQ).length>=Object.keys(playersInRoom).length&&Object.keys(playersInRoom).length>0){clearInterval(timerInterval);setTimeout(goToScoring,500);}});
-    db.ref('rooms/'+roomId).update({state:'question',currentQ:idx});updateOverlayScores();showState('question');
-}
-
-function goToScoring(){
-    clearInterval(timerInterval);db.ref('rooms/'+roomId+'/answers/'+currentQ).off();
-    const q=questions[currentQ];
-    document.getElementById('score-counter').textContent=`Q${currentQ+1}/20`;
-    document.getElementById('score-question').textContent=q.q;
-    document.getElementById('score-answer').textContent='✓ '+q.opts[q.ans];
-    awardStep=0;updateAwardPrompt();
-    // Sort players by speed (fastest correct first, then incorrect)
-    const players=Object.keys(playersInRoom).filter(n=>n!==PRESENTER);
-    const ranked=players.map(name=>{
-        const a=answersThisQ[name];
-        return{name,correct:a&&a.correct,time:a?a.time:99,answered:!!a};
-    }).sort((a,b)=>{
-        if(a.correct&&!b.correct)return-1;if(!a.correct&&b.correct)return 1;
-        return a.time-b.time;
-    });
-    document.getElementById('scoring-badges').innerHTML=ranked.map((p,i)=>
-        `<button class="award-badge px-7 py-3.5 rounded-xl border text-lg font-bold ${p.correct?'bg-brand-accent/10 border-brand-accent/30 text-brand-accent':p.answered?'bg-red-500/10 border-red-500/20 text-red-400':'bg-white/5 border-white/10 text-white/30'}" data-name="${p.name}" data-idx="${i}" onclick="awardClick('${p.name}')">${p.correct?'✓':p.answered?'✗':'—'} ${p.name} ${p.correct?'<span class=\\"text-sm text-white/30\\">'+(p.time)+'s</span>':''}</button>`
-    ).join('');
-    document.getElementById('btn-next-q').classList.add('hidden');
-    db.ref('rooms/'+roomId).update({state:'scoring'});showState('scoring');
-}
-
-function updateAwardPrompt(){const el=document.getElementById('award-prompt');if(awardStep===0)el.innerHTML='<span class="text-amber-400">Click for 🥇 1st (3pts)</span>';else if(awardStep===1)el.innerHTML='<span class="text-slate-300">Click for 🥈 2nd (2pts)</span>';else if(awardStep===2)el.innerHTML='<span class="text-orange-400">Click for 🥉 3rd (1pt)</span>';else{el.innerHTML='<span class="text-brand-accent">✓ Done</span>';document.getElementById('btn-next-q').classList.remove('hidden');}}
-
-function awardClick(name){
-    if(awardStep>=3)return;
-    const pts=[3,2,1][awardStep];
-    gameScores[name]=(gameScores[name]||0)+pts;
-    db.ref('rooms/'+roomId+'/gameScores').set(gameScores);
-    highlightBadge(name,['gold','silver','bronze'][awardStep],['🥇','🥈','🥉'][awardStep]+' '+pts+'pts');
-    awardStep++;updateAwardPrompt();updateOverlayScores();
-    if(awardStep>=3)setTimeout(()=>document.getElementById('btn-next-q').classList.remove('hidden'),300);
-}
-function highlightBadge(n,cls,label){document.querySelectorAll('.award-badge').forEach(b=>{if(b.dataset.name===n){b.classList.add(cls);b.innerHTML=label+' '+n;b.onclick=null;b.style.cursor='default';b.classList.add('pop-in');}});}
-function skipScoring(){awardStep=3;updateAwardPrompt();document.getElementById('btn-next-q').classList.remove('hidden');}
-
-function nextQuestion(){
-    const nextIdx=currentQ+1;
-    // Tally every 5 questions
-    if(nextIdx%5===0&&nextIdx<20){showTally(nextIdx);return;}
-    if(nextIdx>=20){showPodium();return;}
-    showQuestion(nextIdx);
-}
-
-function showTally(nextIdx){
-    const sorted=Object.entries(gameScores).sort((a,b)=>b[1]-a[1]);
-    const m=['🥇','🥈','🥉'];
-    document.getElementById('tally-heading').textContent=`Scores after Q${nextIdx}`;
-    document.getElementById('tally-board').innerHTML=sorted.map(([n,p],i)=>`<div class="flex items-center justify-between py-3 px-4 rounded-xl bg-white/[0.03] ${i<3?'border border-amber-400/10':''}"><span class="text-xl font-bold text-white/80">${m[i]||''} ${n}</span><span class="text-xl mono font-black text-brand-accent">${p}pts</span></div>`).join('');
-    db.ref('rooms/'+roomId).update({state:'tally',gameScores});
-    // Store nextIdx so Continue knows where to go
-    window._nextQ=nextIdx;
-    showState('tally');
-}
-
-// Override nextQuestion for tally continue button
-const _origNext=nextQuestion;
-document.querySelector('#state-tally button').onclick=()=>{
-    const idx=window._nextQ||currentQ+1;
-    if(idx>=20)showPodium();else showQuestion(idx);
-};
-
-function updateOverlayScores(){const sorted=Object.entries(gameScores).sort((a,b)=>b[1]-a[1]);const m=['🥇','🥈','🥉'];document.getElementById('overlay-scores').innerHTML=sorted.map(([n,p],i)=>`<div class="flex items-center justify-between py-1.5 px-2 rounded-md bg-white/[0.03]"><span class="text-sm font-bold text-white/70">${m[i]||''} ${n}</span><span class="text-xs mono font-black text-brand-accent">${p}pts</span></div>`).join('')||'<div class="text-xs text-white/20 text-center">—</div>';}
-
-function showPodium(){
-    const sorted=Object.entries(gameScores).sort((a,b)=>b[1]-a[1]),top3=sorted.slice(0,3);
-    [3,2,1].forEach((pts,i)=>{if(top3[i])db.ref('leaderboard/'+top3[i][0]).transaction(v=>(v||0)+pts);});
-    const ml=['🥇','🥈','🥉'],ht=['h-36','h-48','h-28'],sz=['w-16 h-16 text-2xl','w-20 h-20 text-3xl','w-14 h-14 text-xl'];
-    const cl=['from-amber-400/30 to-amber-500/20 border-amber-400/50','from-slate-400/30 to-slate-500/20 border-slate-400/40','from-orange-700/30 to-orange-800/20 border-orange-600/40'];
-    const order=top3.length>=3?[1,0,2]:top3.map((_,i)=>i);
-    document.getElementById('podium-display').innerHTML=order.map(i=>{if(!top3[i])return'';const[name,pts]=top3[i];return`<div class="flex flex-col items-center gap-2 pop-in"><span class="text-5xl">${ml[i]}</span><div class="${sz[i]} rounded-full bg-gradient-to-br ${cl[i]} border-2 flex items-center justify-center font-black">${name[0]}</div><div class="font-bold text-white text-2xl">${name}</div><div class="text-lg mono text-white/50">${pts} pts</div><div class="${ht[i]} w-24 rounded-t-xl bg-gradient-to-t ${cl[i]} border border-b-0 flex items-center justify-center text-4xl font-black text-white/20">${i+1}</div></div>`;}).join('');
-    launchConfetti();db.ref('rooms/'+roomId).update({state:'podium',gameScores});showState('podium');
-}
-function endGame(){db.ref('rooms/'+roomId+'/players').off();document.getElementById('trivia-overlay').classList.remove('active');loadTriviaLeaders();}
-function launchConfetti(){const cols=['#fbbf24','#34d399','#22d3ee','#ec4899','#8b5cf6','#f87171'];for(let i=0;i<60;i++){const el=document.createElement('div');el.className='confetti';el.style.cssText=`left:${Math.random()*100}vw;top:-20px;width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;background:${cols[0|Math.random()*cols.length]};border-radius:${Math.random()>0.5?'50%':'2px'};`;document.body.appendChild(el);const dur=2+Math.random()*2,drift=(Math.random()-0.5)*200;el.animate([{transform:'translateY(0) rotate(0)',opacity:1},{transform:`translateY(100vh) translateX(${drift}px) rotate(${360+Math.random()*360}deg)`,opacity:0}],{duration:dur*1000,easing:'cubic-bezier(.25,.46,.45,.94)'}).onfinish=()=>el.remove();}}
-
-// ═══════════════════════════════════════════════════════════════
-// QUOKKA EASTER EGG
-// ═══════════════════════════════════════════════════════════════
-function placeQuokka(){const el=document.getElementById('quokka-egg');const spots=[{bottom:'8px',right:'8px'},{bottom:'8px',left:'8px'},{top:'80px',right:'8px'},{top:'80px',left:'8px'},{bottom:'50%',right:'8px'},{bottom:'50%',left:'8px'}];const day=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/864e5);const spot=spots[day%spots.length];el.style.cssText='';el.className='reset';Object.assign(el.style,{position:'fixed',zIndex:'50',width:'70px',height:'70px',cursor:'pointer',...spot});setTimeout(()=>{el.classList.remove('reset');el.classList.add('show');},500);el.onclick=()=>{el.classList.remove('show');el.classList.add('reset');setTimeout(placeQuokka,8000);};}
 
 // ═══════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════
-function setupQRs(){const base=window.location.href.replace(/\/[^/]*$/,'/');document.getElementById('trivia-qr').innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(base+'play.html')}&bgcolor=020617&color=e2e8f0&format=svg" class="w-full h-full" alt="QR">`;document.getElementById('trivia-url-display').textContent=(base+'play.html').replace(/https?:\/\//,'').substring(0,36);}
-renderAll();renderAINews();loadTriviaLeaders();loadTodayCheckins();updateCountdowns();
-updateClock();setInterval(updateClock,1000);
-setInterval(()=>{const n=new Date();if(n.getHours()===0&&n.getMinutes()===0&&n.getSeconds()<2){renderAll();updateCountdowns();}},1000);
-setupQRs();placeQuokka();loadFromSheets();
+renderClassBadge();
+renderProgress();
+loadFromSheet();
+
+// Auto-refresh from sheet
+if (CONFIG.sheetUrl && CONFIG.refreshSecs > 0) {
+    setInterval(loadFromSheet, CONFIG.refreshSecs * 1000);
+}
+
+// Midnight reset
+setInterval(() => {
+    const n = new Date();
+    if (n.getHours() === 0 && n.getMinutes() === 0 && n.getSeconds() < 2) {
+        renderClassBadge();
+        renderProgress();
+        loadFromSheet();
+    }
+}, 1000);
 </script>
 </body>
 </html>
