@@ -1,6 +1,6 @@
 # EQC Hub — Intake 25J
 
-> A big-screen classroom hub and live dashboard for Equinim College's Intake 25J (Diploma of IT — Back End Web Development).
+> One big-screen live dashboard for Equinim College's Intake 25J (Diploma of IT — Back End Web Development): course progress, today's topics, attendance, the Riz Quiz leaderboard and class activity on a single page.
 
 **Live demo:** [eqc-hub-25j.vercel.app](https://eqc-hub-25j.vercel.app)
 
@@ -8,20 +8,20 @@
 
 ## Features
 
-- Six-tile classroom display: intake, trainer, today's topics, attendance, Riz Quiz leaderboard and course progress
-- Live clock, class-day counter and course progress bar calculated from the intake's start/end dates and class days
-- Today's topics, notes and attendance pulled from a published Google Sheet (CSV) on a timer
-- **Riz Quiz** (`play.html`) — real-time trivia leaderboard backed by Firebase Realtime Database
-- **Live dashboard** (`dashboard.html`) — animated KPI counters, Chart.js line/doughnut/bar charts and a recent-activity feed driven by mock data that refreshes every few seconds
-- Responsive layout: full-screen grid on a classroom TV, stacked cards on phones
-- All per-intake settings live in one `CONFIG` object at the top of `index.html`
+- **Hero:** intake, course, today's class number, trainer and an animated course-progress ring (worked out from the start/end dates and class days)
+- **Live KPI tiles:** commits, assessments in, quiz answers and help tickets, with count-up numbers and sparklines
+- **Riz Quiz leaderboard:** nine students with a question timer; scores tick up and rows re-order with animation (`play.html` is the student game)
+- **Today's Topics** and **Attendance:** styled placeholders (marked *Sample*) ready to wire to the real lesson plan and sign-in
+- **Class activity chart, unit progress bars and a recent-activity feed**, all driven by mock data that refreshes every few seconds
+- Responsive: big-screen grid on the classroom TV, stacked cards on a phone
+- All per-intake settings (intake code, dates, class days, student names) live in one `CONFIG` object at the top of `index.html`
 
 ## Tech stack
 
 - Plain HTML + vanilla JavaScript (no build step)
 - Tailwind CSS (Play CDN), Inter + JetBrains Mono, Bootstrap Icons
-- Chart.js 4 for the dashboard charts
-- Firebase Realtime Database (compat SDK) for the quiz leaderboard
+- Chart.js 4 for the activity chart
+- Firebase Realtime Database for the student quiz game (`play.html`)
 - Hosted on Vercel as a static site
 
 ## Run it locally
@@ -30,23 +30,23 @@
 git clone https://github.com/thedalycreative/eqc-hub-25J.git
 cd eqc-hub-25J
 python3 -m http.server 8000   # or: npx serve .
-# open http://localhost:8000  (dashboard: /dashboard.html)
+# open http://localhost:8000
 ```
 
 ## Deployment (Vercel)
 
 Static site — no build command, output directory is the repo root. The Vercel project **eqc-hub-25j** is linked to this repo and deploys `main` to production at **https://eqc-hub-25j.vercel.app**. Every push to `main` redeploys; other branches get preview URLs.
 
-To reuse for a new intake, edit `CONFIG` in `index.html` (intake code, dates, class days, Google Sheet CSV URL, Firebase config).
+To reuse for a new intake, edit `CONFIG` in `index.html` (intake code, dates, class days, students). `dashboard.html` now just redirects to the home page.
 
 ## Screenshots
 
 ![EQC Hub — Intake 25J demo](docs/screenshots/demo.gif)
 
 <p align="center">
-  <img src="docs/screenshots/desktop.jpg" alt="Classroom hub on a 1440px screen" width="560">
-  <img src="docs/screenshots/dashboard.jpg" alt="Live dashboard with charts and activity feed" width="560">
-  <img src="docs/screenshots/mobile.jpg" alt="Hub on a phone" width="260">
+  <img src="docs/screenshots/desktop.jpg" alt="Dashboard on a classroom TV (1920px)" width="560">
+  <img src="docs/screenshots/dashboard.jpg" alt="Full dashboard: activity chart, unit progress and feed" width="560">
+  <img src="docs/screenshots/mobile.jpg" alt="Dashboard on a phone" width="260">
 </p>
 
 _Captured from the live site (https://eqc-hub-25j.vercel.app). Regenerate with any headless browser; files live in `docs/screenshots/`._

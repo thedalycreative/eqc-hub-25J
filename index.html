@@ -4,433 +4,447 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Intake 25J | Equinim College</title>
+    <meta name="description" content="Intake 25J live classroom dashboard: course progress, today's topics, attendance, Riz Quiz leaderboard and class activity.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-    <script>tailwind.config={theme:{extend:{colors:{brand:{dark:'#0f172a',deeper:'#020617',mid:'#1e293b',accent:'#10b981',accent2:'#06b6d4',warn:'#f59e0b',purple:'#8b5cf6'}},fontFamily:{sans:['Inter','system-ui','sans-serif'],mono:['JetBrains Mono','monospace']}}}}</script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = { theme: { extend: {
+            colors: { brand: { dark:'#0f172a', deeper:'#020617', accent:'#10b981', accent2:'#06b6d4', purple:'#8b5cf6' } },
+            fontFamily: { sans:['Inter','system-ui','sans-serif'], mono:['JetBrains Mono','monospace'] }
+        } } }
+    </script>
     <style>
-        body{font-family:'Inter',system-ui,sans-serif;margin:0;}
-        .mono{font-family:'JetBrains Mono',monospace;}
-        .grad-text{background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-        .card{background:#0f172a;border-radius:16px;border:1px solid rgba(255,255,255,0.06);padding:clamp(16px,2vw,32px);display:flex;flex-direction:column;overflow:hidden;}
-        .blink{animation:bk 1s step-end infinite;}@keyframes bk{0%,100%{opacity:1}50%{opacity:0}}
-        .pulse-dot{animation:pd 2s ease-in-out infinite;}@keyframes pd{0%,100%{opacity:.3}50%{opacity:1}}
-        .fade-in{animation:fi .5s ease-out;}@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+        body { font-family:'Inter',system-ui,sans-serif;
+               background: radial-gradient(1200px 600px at 10% -10%, rgba(16,185,129,.12), transparent 60%),
+                           radial-gradient(900px 500px at 100% 0%, rgba(139,92,246,.10), transparent 60%), #020617; }
+        .mono { font-family:'JetBrains Mono',monospace; }
+        .grad-text { background:linear-gradient(135deg,#10b981 0%,#06b6d4 55%,#8b5cf6 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .card { background:linear-gradient(180deg,rgba(15,23,42,.92),rgba(15,23,42,.78)); border:1px solid rgba(255,255,255,.07);
+                border-radius:20px; padding:20px; backdrop-filter:blur(6px); position:relative; overflow:hidden; }
+        .card h2 { font-size:1.05rem; font-weight:800; color:rgba(255,255,255,.9); display:flex; align-items:center; gap:.6rem; }
+        .tag { font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; padding:3px 8px; border-radius:999px; }
+        .tag-sample { background:rgba(245,158,11,.12); color:#fbbf24; border:1px solid rgba(245,158,11,.3); }
+        .tag-live { background:rgba(16,185,129,.12); color:#34d399; border:1px solid rgba(16,185,129,.35); }
+        .pulse { animation:pulse 1.6s ease-in-out infinite; } @keyframes pulse { 0%,100%{opacity:.35} 50%{opacity:1} }
+        .blink { animation:blink 1s step-end infinite; } @keyframes blink { 50%{opacity:.2} }
+        .rise { animation:rise .5s ease-out both; } @keyframes rise { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+        .feed-in { animation:feed .45s ease-out; } @keyframes feed { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:none} }
+        .bump { animation:bump .9s ease-out; } @keyframes bump { 0%{background:rgba(16,185,129,.28)} 100%{background:rgba(255,255,255,.025)} }
+        .float-pts { position:absolute; right:14px; font-weight:900; color:#34d399; animation:floatup 1s ease-out forwards; pointer-events:none; }
+        @keyframes floatup { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-22px)} }
+        .lb-row { transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+        .ring-track { stroke:rgba(255,255,255,.07); } .ring-bar { transition: stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1); }
+        .glow { position:absolute; inset:auto -40% -60% auto; width:320px; height:320px; border-radius:50%; filter:blur(60px); opacity:.25; pointer-events:none; }
+        @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation:none!important; transition:none!important; } }
     </style>
 </head>
-<body class="bg-brand-deeper text-white min-h-screen lg:h-screen lg:overflow-hidden flex flex-col">
+<body class="text-white min-h-screen">
 
-<!-- ╔══════════════════════════════════════════════════════╗ -->
-<!-- ║  CONFIG — Change these for each intake              ║ -->
-<!-- ╚══════════════════════════════════════════════════════╝ -->
 <script>
+// ═══════════════════════════════════════════════════════════════
+// CONFIG — edit per intake
+// ═══════════════════════════════════════════════════════════════
 const CONFIG = {
-    intake:       '25J',
-    course:       'Diploma of IT — Back End Web Development',
-    college:      'Equinim College',
-    room:         'Room 1',
-    trainer:      'Tim',
-    trainerImg:   'img/tim-head.png',
-    startDate:    '2026-07-06',   // first day of class
-    endDate:      '2026-12-18',   // last day of class
-    classDays:    [1, 2, 5],      // Mon=1, Tue=2, Fri=5
-    holidays:     [
-        // { start: '2026-09-28', end: '2026-10-09' }  // term break example
-    ],
-    // Google Sheet: File > Share > Publish to web > CSV
-    // Columns: Date | Trainer | Topics | Notes | Attendance
-    sheetUrl:     '',
-    refreshSecs:  60,
-    // Firebase (for Riz Quiz trivia)
-    firebase: {
-        apiKey:            'AIzaSyDXYLxPZRkb9IZSilqYqqRKnUsmJyXL_ss',
-        authDomain:        'intake-25g-trivia.firebaseapp.com',
-        databaseURL:       'https://intake-25g-trivia-default-rtdb.asia-southeast1.firebasedatabase.app',
-        projectId:         'intake-25g-trivia',
-        storageBucket:     'intake-25g-trivia.firebasestorage.app',
-        messagingSenderId: '138198468293',
-        appId:             '1:138198468293:web:cf8f5d589a693dd2e852ac',
-    },
+    intake:     '25J',
+    course:     'Diploma of IT — Back End Web Development',
+    college:    'Equinim College',
+    room:       'Room 1',
+    trainer:    'Tim',
+    trainerImg: 'img/tim-head.png',
+    startDate:  '2026-07-06',   // first day of class
+    endDate:    '2026-12-18',   // last day of class
+    classDays:  [1, 2, 5],      // Mon=1, Tue=2, Fri=5
+    holidays:   [ /* { start:'2026-09-28', end:'2026-10-09' } */ ],
+    students:   ['Emma','Joanna','Saxon','Aaron','Tze','Neil','Claire','Dwayne','Tom'],
+    tickMs:     3200,           // how often the demo data moves
 };
 </script>
 
-<!-- NAVBAR -->
-<nav class="flex flex-wrap items-center justify-between gap-3 px-4 lg:px-6 py-3 border-b border-white/5 shrink-0 bg-brand-dark/60" style="min-height:80px;">
-    <div class="flex items-center gap-5">
-        <span class="text-5xl font-black grad-text tracking-tight leading-none" id="nav-intake">25J</span>
-        <div class="hidden lg:block h-12 w-px bg-white/10"></div>
-        <span class="hidden sm:inline text-xl font-bold text-white/70" id="nav-college">Equinim College</span>
-        <span class="hidden 2xl:inline text-white/15 text-2xl">·</span>
-        <span class="hidden 2xl:flex text-lg text-white/40 items-center gap-2"><i class="bi bi-mortarboard-fill"></i> <span id="nav-course-short">Diploma of IT</span></span>
-    </div>
-    <div class="flex flex-wrap items-center gap-3 lg:gap-5">
-        <a href="dashboard.html" class="flex items-center gap-2 text-lg font-bold text-brand-accent bg-brand-accent/10 border border-brand-accent/30 rounded-xl px-4 py-2 hover:bg-brand-accent/20 transition"><i class="bi bi-speedometer2"></i> Dashboard</a>
-        <div class="hidden lg:block h-12 w-px bg-white/10"></div>
-        <div class="hidden lg:flex items-center gap-2 text-xl text-white/40"><i class="bi bi-door-open-fill"></i><span class="font-semibold" id="nav-room">Room 1</span></div>
-        <div class="hidden lg:block h-12 w-px bg-white/10"></div>
-        <div id="class-badge"></div>
-        <div class="hidden lg:block h-12 w-px bg-white/10"></div>
-        <div class="hidden xl:flex items-center gap-2 text-lg mono text-white/50" id="header-clock"></div>
-        <div class="hidden lg:block h-12 w-px bg-white/10"></div>
-        <div class="flex items-center gap-3" id="nav-trainer"></div>
-    </div>
-</nav>
-
-<!-- 6-TILE GRID -->
-<main class="grid gap-3 p-3 flex-1 min-h-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2">
-
-    <!-- TILE 1: INTAKE + COURSE (big hero) -->
-    <div class="card items-center justify-center text-center" style="border-color:rgba(16,185,129,0.15);">
-        <div class="font-black grad-text leading-none tracking-tighter" style="font-size:clamp(5rem,11vw,10rem)" id="tile-intake">25J</div>
-        <div class="text-2xl font-bold text-white/40 mt-2" id="tile-course">Diploma of IT — Back End Web Development</div>
-    </div>
-
-    <!-- TILE 2: TRAINER + DATE -->
-    <div class="card items-center justify-center text-center" style="border-color:rgba(6,182,212,0.1);">
-        <img id="tile-trainer-img" src="img/tim-head.png" alt="" class="w-28 h-28 rounded-full object-cover border-4 border-brand-accent/40 mb-4">
-        <div class="text-5xl font-black text-white/90" id="tile-trainer-name">Tim</div>
-        <div class="text-xl text-brand-accent font-bold uppercase tracking-widest mt-1">Trainer</div>
-        <div class="text-lg text-white/30 mt-3 mono" id="tile-date"></div>
-    </div>
-
-    <!-- TILE 3: TODAY'S TOPICS + NOTES -->
-    <div class="card min-h-[260px]" style="border-color:rgba(139,92,246,0.12);">
-        <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-3 mb-4 shrink-0">
-            <i class="bi bi-journal-text text-purple-400"></i> Today's Topics
-        </h2>
-        <div class="flex-1 flex flex-col justify-center" id="tile-topics">
-            <div class="text-center text-white/20 text-xl">
-                <i class="bi bi-cloud-arrow-down text-4xl block mb-2"></i>
-                Submit via Google Form to populate
-            </div>
-        </div>
-        <div id="tile-notes" class="hidden mt-3 pt-3 border-t border-white/5">
-            <!-- Notes/announcements appear here when sheet has data -->
+<!-- ════════════════ TOP BAR ════════════════ -->
+<header class="flex flex-wrap items-center justify-between gap-3 px-4 lg:px-6 py-3 border-b border-white/5 bg-slate-950/60 backdrop-blur sticky top-0 z-20">
+    <div class="flex items-center gap-4">
+        <span class="text-4xl font-black grad-text tracking-tight leading-none" id="nav-intake">25J</span>
+        <div class="h-10 w-px bg-white/10 hidden sm:block"></div>
+        <div class="hidden sm:block leading-tight">
+            <div class="text-lg font-bold text-white/85" id="nav-college">Equinim College</div>
+            <div class="text-xs text-white/40" id="nav-course"></div>
         </div>
     </div>
-
-    <!-- TILE 4: ATTENDANCE -->
-    <div class="card min-h-[260px]" style="border-color:rgba(16,185,129,0.1);">
-        <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-3 mb-4 shrink-0">
-            <i class="bi bi-people-fill text-brand-accent"></i> Attendance
-        </h2>
-        <div class="flex-1 flex flex-col justify-center items-center" id="tile-attendance">
-            <div class="font-black text-brand-accent leading-none" style="font-size:clamp(4rem,7vw,6rem)" id="att-count">—</div>
-            <div class="text-2xl text-white/30 font-bold mt-2">present today</div>
-        </div>
+    <div class="flex flex-wrap items-center gap-3">
+        <span class="flex items-center gap-2 text-xs font-bold text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-full px-3 py-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 pulse"></span> LIVE
+        </span>
+        <span class="hidden md:flex items-center gap-2 text-sm text-white/45"><i class="bi bi-door-open-fill"></i><span id="nav-room"></span></span>
+        <span class="hidden lg:block mono text-white/60 text-lg" id="clock"></span>
+        <a href="play.html" class="flex items-center gap-2 text-sm font-bold text-slate-950 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-xl px-4 py-2 hover:brightness-110 transition"><i class="bi bi-controller"></i> Play Riz Quiz</a>
     </div>
+</header>
 
-    <!-- TILE 5: RIZ QUIZ -->
-    <div class="card min-h-[260px]" style="border-color:rgba(245,158,11,0.15);">
-        <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-3 mb-4 shrink-0">
-            <i class="bi bi-trophy-fill text-amber-400"></i> Riz Quiz
-        </h2>
-        <div class="flex-1 overflow-y-auto" id="tile-quiz">
-            <div class="text-center text-white/20 text-xl">
-                <i class="bi bi-hourglass-split text-4xl block mb-2"></i>
-                Loading leaderboard…
-            </div>
-        </div>
-    </div>
+<main class="p-3 lg:p-5 grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-12 max-w-[1920px] mx-auto">
 
-    <!-- TILE 6: COURSE PROGRESS -->
-    <div class="card min-h-[260px]" style="border-color:rgba(236,72,153,0.1);">
-        <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-3 mb-4 shrink-0">
-            <i class="bi bi-bar-chart-fill text-pink-400"></i> Course Progress
-        </h2>
-        <div class="flex-1 flex flex-col justify-center items-center" id="tile-progress">
-            <div class="w-full max-w-xs">
-                <div class="flex justify-between text-lg text-white/40 mb-2">
-                    <span id="prog-label">Day 0</span>
-                    <span id="prog-pct">0%</span>
+    <!-- ════════ HERO: INTAKE + PROGRESS ════════ -->
+    <section class="card md:col-span-2 xl:col-span-5 rise">
+        <div class="glow" style="background:#10b981"></div>
+        <div class="flex flex-col sm:flex-row items-center gap-6">
+            <div class="flex-1 min-w-0 text-center sm:text-left">
+                <div class="text-xs font-bold uppercase tracking-[.2em] text-white/35">Intake</div>
+                <div class="font-black grad-text leading-none tracking-tighter" style="font-size:clamp(5rem,9vw,8.5rem)" id="hero-intake">25J</div>
+                <div class="text-base font-semibold text-white/60 mt-1" id="hero-course"></div>
+                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-4">
+                    <span class="mono text-sm font-bold bg-white/5 border border-white/10 rounded-lg px-3 py-1.5" id="hero-classno">Class #—</span>
+                    <span class="text-sm text-white/45 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5" id="hero-date"></span>
                 </div>
-                <div class="w-full h-6 bg-white/5 rounded-full overflow-hidden">
-                    <div id="prog-bar" class="h-full rounded-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-1000" style="width:0%"></div>
-                </div>
-                <div class="flex justify-between text-base text-white/20 mt-2">
-                    <span id="prog-start">Start</span>
-                    <span id="prog-end">End</span>
+                <div class="flex items-center justify-center sm:justify-start gap-3 mt-5">
+                    <img id="trainer-img" src="img/tim-head.png" alt="" class="w-12 h-12 rounded-full object-cover border-2 border-emerald-400/50">
+                    <div class="leading-tight text-left"><div class="font-bold" id="trainer-name">Tim</div><div class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Trainer</div></div>
                 </div>
             </div>
-            <div class="flex gap-6 mt-6 text-lg">
-                <div class="text-center"><div class="text-3xl font-black text-white/60" id="prog-classes">—</div><div class="text-sm text-white/25">Classes</div></div>
-                <div class="text-center"><div class="text-3xl font-black text-white/60" id="prog-remaining">—</div><div class="text-sm text-white/25">Remaining</div></div>
-                <div class="text-center"><div class="text-3xl font-black text-white/60" id="prog-weeks">—</div><div class="text-sm text-white/25">Weeks Left</div></div>
+            <div class="relative shrink-0" style="width:210px;height:210px">
+                <svg viewBox="0 0 120 120" class="w-full h-full -rotate-90" aria-hidden="true">
+                    <defs><linearGradient id="rg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#10b981"/><stop offset=".6" stop-color="#06b6d4"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>
+                    <circle cx="60" cy="60" r="52" fill="none" stroke-width="10" class="ring-track"/>
+                    <circle id="ring" cx="60" cy="60" r="52" fill="none" stroke="url(#rg)" stroke-width="10" stroke-linecap="round" class="ring-bar" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <div class="text-5xl font-black" id="ring-pct">0%</div>
+                    <div class="text-xs text-white/40 font-semibold">course complete</div>
+                </div>
             </div>
         </div>
-    </div>
+        <div class="grid grid-cols-3 gap-3 mt-5 text-center">
+            <div class="bg-white/[.03] rounded-xl py-2"><div class="text-2xl font-black mono" id="p-done">—</div><div class="text-[11px] text-white/35">Classes done</div></div>
+            <div class="bg-white/[.03] rounded-xl py-2"><div class="text-2xl font-black mono" id="p-left">—</div><div class="text-[11px] text-white/35">Classes left</div></div>
+            <div class="bg-white/[.03] rounded-xl py-2"><div class="text-2xl font-black mono" id="p-weeks">—</div><div class="text-[11px] text-white/35">Weeks to go</div></div>
+        </div>
+    </section>
 
+    <!-- ════════ KPI COUNTERS ════════ -->
+    <section class="md:col-span-2 xl:col-span-7 grid grid-cols-2 gap-4" id="kpis"></section>
+
+    <!-- ════════ TODAY'S TOPICS (placeholder) ════════ -->
+    <section class="card xl:col-span-4 rise" style="animation-delay:.05s">
+        <div class="flex items-center justify-between mb-4">
+            <h2><i class="bi bi-journal-code text-cyan-400"></i> Today's Topics</h2>
+            <span class="tag tag-sample">Sample</span>
+        </div>
+        <ol class="space-y-3" id="topics"></ol>
+        <div class="mt-4 text-xs text-white/30 flex items-center gap-2"><i class="bi bi-info-circle"></i> Placeholder: swap in the real lesson plan.</div>
+    </section>
+
+    <!-- ════════ RIZ QUIZ ════════ -->
+    <section class="card xl:col-span-4 rise" style="animation-delay:.1s">
+        <div class="glow" style="background:#f59e0b;opacity:.15"></div>
+        <div class="flex items-center justify-between mb-2">
+            <h2><i class="bi bi-trophy-fill text-amber-400"></i> Riz Quiz</h2>
+            <span class="tag tag-live">Round live</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-white/40 mb-2">
+            <span id="quiz-q">Question 1 of 10</span>
+            <span class="mono" id="quiz-timer">0:20</span>
+        </div>
+        <div class="h-1.5 bg-white/5 rounded-full overflow-hidden mb-3"><div id="quiz-bar" class="h-full bg-gradient-to-r from-amber-400 to-pink-500 transition-all duration-1000 ease-linear" style="width:100%"></div></div>
+        <div class="relative" id="leaderboard"></div>
+    </section>
+
+    <!-- ════════ ATTENDANCE (placeholder) ════════ -->
+    <section class="card md:col-span-2 xl:col-span-4 rise" style="animation-delay:.15s">
+        <div class="flex items-center justify-between mb-4">
+            <h2><i class="bi bi-person-check-fill text-emerald-400"></i> Attendance</h2>
+            <span class="tag tag-sample">Sample</span>
+        </div>
+        <div class="flex items-end gap-4 mb-4">
+            <div class="text-6xl font-black text-emerald-400 leading-none mono" id="att-count">0</div>
+            <div class="pb-1">
+                <div class="text-white/60 font-semibold">of <span id="att-total">9</span> present</div>
+                <div class="w-40 h-2 bg-white/5 rounded-full overflow-hidden mt-2"><div id="att-bar" class="h-full bg-emerald-400 transition-all duration-700" style="width:0%"></div></div>
+            </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2" id="attendance"></div>
+    </section>
+
+    <!-- ════════ ACTIVITY CHART ════════ -->
+    <section class="card xl:col-span-5 rise" style="animation-delay:.2s">
+        <div class="flex items-center justify-between mb-3">
+            <h2><i class="bi bi-graph-up-arrow text-cyan-400"></i> Class activity · last 30 min</h2>
+            <span class="text-[11px] text-white/30 mono">events / min</span>
+        </div>
+        <div class="h-56"><canvas id="lineChart"></canvas></div>
+    </section>
+
+    <!-- ════════ UNIT PROGRESS ════════ -->
+    <section class="card xl:col-span-3 rise" style="animation-delay:.25s">
+        <h2 class="mb-4"><i class="bi bi-bar-chart-steps text-pink-400"></i> Unit progress</h2>
+        <div class="space-y-3" id="units"></div>
+    </section>
+
+    <!-- ════════ ACTIVITY FEED ════════ -->
+    <section class="card md:col-span-2 xl:col-span-4 rise" style="animation-delay:.3s">
+        <div class="flex items-center justify-between mb-3">
+            <h2><i class="bi bi-lightning-charge-fill text-amber-400"></i> Recent activity</h2>
+            <span class="text-[11px] text-white/30 mono" id="feed-updated"></span>
+        </div>
+        <ul class="space-y-2" id="feed"></ul>
+    </section>
 </main>
 
+<footer class="text-center text-[11px] text-white/25 pb-5">Demo dashboard · topics, attendance, quiz scores and activity are sample data that refresh automatically.</footer>
+
 <script>
-// ═══════════════════════════════════════════════════════════════
-// INIT NAV FROM CONFIG
-// ═══════════════════════════════════════════════════════════════
-document.getElementById('nav-intake').textContent = CONFIG.intake;
-document.getElementById('nav-college').textContent = CONFIG.college;
-document.getElementById('nav-room').textContent = CONFIG.room;
-document.getElementById('tile-intake').textContent = CONFIG.intake;
-document.getElementById('tile-course').textContent = CONFIG.course;
-document.getElementById('tile-trainer-name').textContent = CONFIG.trainer;
-document.getElementById('tile-trainer-img').src = CONFIG.trainerImg;
+// ─── helpers ──────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const rnd = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const pick = a => a[rnd(0,a.length-1)];
+const COLORS = ['#10b981','#06b6d4','#8b5cf6','#f59e0b','#ec4899','#3b82f6','#14b8a6','#f97316','#a855f7'];
+const color = name => COLORS[CONFIG.students.indexOf(name) % COLORS.length];
+const avatar = (name, size=32) => `<span class="inline-flex items-center justify-center rounded-full font-black text-slate-950 shrink-0" style="width:${size}px;height:${size}px;font-size:${Math.round(size*.42)}px;background:${color(name)}">${name[0]}</span>`;
+
+// ─── animated counters ───────────────────────────────────────
+const shown = {};
+function countUp(id, target, ms=900, suffix=''){
+    const el = $(id), from = shown[id] ?? 0, t0 = performance.now();
+    shown[id] = target;
+    (function step(now){
+        const p = Math.min(1,(now-t0)/ms), e = 1-Math.pow(1-p,3);
+        el.textContent = Math.round(from+(target-from)*e).toLocaleString('en-AU') + suffix;
+        if (p < 1) requestAnimationFrame(step);
+    })(t0);
+}
+
+// ─── static text from CONFIG ─────────────────────────────────
+$('nav-intake').textContent = $('hero-intake').textContent = CONFIG.intake;
+$('nav-college').textContent = CONFIG.college;
+$('nav-course').textContent = $('hero-course').textContent = CONFIG.course;
+$('nav-room').textContent = CONFIG.room;
+$('trainer-name').textContent = CONFIG.trainer;
+$('trainer-img').src = CONFIG.trainerImg;
+$('att-total').textContent = CONFIG.students.length;
 document.title = `Intake ${CONFIG.intake} | ${CONFIG.college}`;
 
-// Trainer in navbar
-document.getElementById('nav-trainer').innerHTML = `
-    <img src="${CONFIG.trainerImg}" alt="${CONFIG.trainer}" class="w-14 h-14 rounded-full object-cover border-[3px] border-brand-accent/50">
-    <div class="leading-tight">
-        <div class="text-lg font-bold text-white/90">${CONFIG.trainer}</div>
-        <div class="text-xs text-brand-accent font-bold uppercase tracking-wider">Trainer</div>
-    </div>`;
-
-// ═══════════════════════════════════════════════════════════════
-// CLOCK
-// ═══════════════════════════════════════════════════════════════
-function updateClock() {
-    const n = new Date();
-    const h = String(n.getHours()).padStart(2,'0');
-    const m = String(n.getMinutes()).padStart(2,'0');
-    const s = String(n.getSeconds()).padStart(2,'0');
-    const d = n.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-    document.getElementById('header-clock').innerHTML =
-        `<i class="bi bi-clock text-white/25"></i><span class="text-lg font-semibold">${h}<span class="blink">:</span>${m}<span class="blink">:</span>${s}</span>`;
-    document.getElementById('tile-date').textContent = d;
+// ─── clock ───────────────────────────────────────────────────
+function clock(){
+    const n = new Date(), p = v => String(v).padStart(2,'0');
+    $('clock').innerHTML = `${p(n.getHours())}<span class="blink">:</span>${p(n.getMinutes())}<span class="blink">:</span>${p(n.getSeconds())}`;
+    $('hero-date').textContent = n.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long'});
 }
-updateClock();
-setInterval(updateClock, 1000);
+clock(); setInterval(clock, 1000);
 
-// ═══════════════════════════════════════════════════════════════
-// CLASS COUNTER
-// ═══════════════════════════════════════════════════════════════
-function isHoliday(d) {
-    return CONFIG.holidays.some(h => {
-        const s = new Date(h.start), e = new Date(h.end);
-        s.setHours(0,0,0,0); e.setHours(0,0,0,0);
-        return d >= s && d <= e;
-    });
-}
-function isClassDay(d) { return CONFIG.classDays.includes(d.getDay()) && !isHoliday(d); }
-
-function getCourseProgress() {
+// ─── course progress (class days between start and end) ──────
+function parse(s){ const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); }
+function isHoliday(d){ return CONFIG.holidays.some(h => d >= parse(h.start) && d <= parse(h.end)); }
+function isClassDay(d){ return CONFIG.classDays.includes(d.getDay()) && !isHoliday(d); }
+function progress(){
+    const start = parse(CONFIG.startDate), end = parse(CONFIG.endDate);
     const today = new Date(); today.setHours(0,0,0,0);
-    const start = new Date(CONFIG.startDate); start.setHours(0,0,0,0);
-    const end = new Date(CONFIG.endDate); end.setHours(0,0,0,0);
-
-    // Count total class days and elapsed class days
-    let total = 0, elapsed = 0;
-    let d = new Date(start);
-    while (d <= end) {
-        if (isClassDay(d)) {
-            total++;
-            if (d <= today) elapsed++;
-        }
-        d.setDate(d.getDate() + 1);
+    let total = 0, done = 0, todayNo = 0;
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
+        if (!isClassDay(d)) continue;
+        total++;
+        if (d <= today) done++;
+        if (d.getTime() === today.getTime()) todayNo = total;
     }
-
-    // Count remaining days from today
-    let remaining = 0;
-    d = new Date(today); d.setDate(d.getDate() + 1);
-    while (d <= end) {
-        if (isClassDay(d)) remaining++;
-        d.setDate(d.getDate() + 1);
-    }
-
-    const isToday = isClassDay(today) && today >= start && today <= end;
-    const weeksLeft = Math.ceil(remaining / CONFIG.classDays.length);
-    const pct = total > 0 ? Math.round(elapsed / total * 100) : 0;
-
-    return { total, elapsed, remaining, isToday, weeksLeft, pct };
+    const pct = total ? Math.round(done/total*100) : 0;
+    const weeks = Math.max(0, Math.ceil((end - today) / (7*864e5)));
+    return { total, done, left: total-done, pct, weeks, classNo: todayNo || done };
 }
+const P = progress();
+$('hero-classno').textContent = `Class #${P.classNo} of ${P.total}`;
+setTimeout(() => { $('ring').style.strokeDashoffset = 326.7 * (1 - P.pct/100); }, 200);
+countUp('ring-pct', P.pct, 1600, '%');
+countUp('p-done', P.done); countUp('p-left', P.left); countUp('p-weeks', P.weeks);
 
-function renderClassBadge() {
-    const info = getCourseProgress();
-    const el = document.getElementById('class-badge');
-    if (info.isToday) {
-        el.innerHTML = `<div class="bg-brand-accent/15 border border-brand-accent/30 rounded-xl px-5 py-1.5 text-center">
-            <div class="text-[8px] text-white/40 font-bold uppercase tracking-widest">Class</div>
-            <div class="text-3xl font-black text-brand-accent mono leading-tight">#${info.elapsed}</div></div>`;
-    } else {
-        el.innerHTML = `<div class="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-1.5 text-center">
-            <div class="text-sm font-extrabold text-red-400">NO CLASS TODAY</div></div>`;
-    }
-}
-
-function renderProgress() {
-    const info = getCourseProgress();
-    document.getElementById('prog-label').textContent = `Day ${info.elapsed} of ${info.total}`;
-    document.getElementById('prog-pct').textContent = info.pct + '%';
-    document.getElementById('prog-bar').style.width = info.pct + '%';
-    document.getElementById('prog-start').textContent = new Date(CONFIG.startDate).toLocaleDateString('en-AU',{day:'numeric',month:'short'});
-    document.getElementById('prog-end').textContent = new Date(CONFIG.endDate).toLocaleDateString('en-AU',{day:'numeric',month:'short'});
-    document.getElementById('prog-classes').textContent = info.elapsed;
-    document.getElementById('prog-remaining').textContent = info.remaining;
-    document.getElementById('prog-weeks').textContent = info.weeksLeft;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// GOOGLE SHEETS LOADER
-// Sheet columns: Date | Trainer | Topics | Notes | Attendance
-// Date format: DD/MM/YYYY or YYYY-MM-DD
-// Topics: semicolon-separated list e.g. "APIs; REST; Express routes"
-// Attendance: number or comma-separated names
-// ═══════════════════════════════════════════════════════════════
-let lastData = null;
-
-async function loadFromSheet() {
-    if (!CONFIG.sheetUrl) return;
-    try {
-        const res = await fetch(CONFIG.sheetUrl);
-        const text = await res.text();
-        const rows = text.trim().split('\n').slice(1); // skip header
-        if (!rows.length) return;
-
-        // Parse all rows
-        const entries = rows.map(row => {
-            // Handle quoted CSV fields
-            const cols = row.match(/(".*?"|[^,]+)/g)?.map(s => s.replace(/^"|"$/g,'').trim()) || [];
-            return {
-                date:       cols[0] || '',
-                trainer:    cols[1] || '',
-                topics:     cols[2] || '',
-                notes:      cols[3] || '',
-                attendance: cols[4] || '',
-            };
-        });
-
-        // Find today's entry (most recent if multiple)
-        const todayStr = new Date().toLocaleDateString('en-AU'); // DD/MM/YYYY
-        const todayISO = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-        let todayEntry = entries.reverse().find(e =>
-            e.date === todayStr || e.date === todayISO ||
-            e.date === new Date().toLocaleDateString('en-AU',{day:'2-digit',month:'2-digit',year:'numeric'})
-        );
-
-        // If no exact date match, use the most recent entry
-        if (!todayEntry && entries.length) todayEntry = entries[0];
-        if (!todayEntry) return;
-
-        lastData = todayEntry;
-        renderSheetData(todayEntry);
-    } catch(e) {
-        console.warn('Sheet load failed:', e);
-    }
-}
-
-function renderSheetData(entry) {
-    // Topics
-    if (entry.topics) {
-        const topics = entry.topics.split(/[;|]/).map(t => t.trim()).filter(Boolean);
-        document.getElementById('tile-topics').innerHTML = topics.map((t, i) =>
-            `<div class="flex items-center gap-3 py-2 fade-in" style="animation-delay:${i*100}ms">
-                <span class="text-3xl">📌</span>
-                <span class="text-3xl font-bold text-white/80">${t}</span>
-            </div>`
-        ).join('');
-    }
-
-    // Attendance
-    if (entry.attendance) {
-        const val = entry.attendance.trim();
-        // Could be a number or comma-separated names
-        if (/^\d+$/.test(val)) {
-            document.getElementById('att-count').textContent = val;
-        } else {
-            const names = val.split(',').map(n => n.trim()).filter(Boolean);
-            document.getElementById('att-count').textContent = names.length;
-            // Optionally show names below
-            const container = document.getElementById('tile-attendance');
-            container.innerHTML = `
-                <div class="text-[5rem] font-black text-brand-accent leading-none">${names.length}</div>
-                <div class="text-xl text-white/30 font-bold mt-1">present today</div>
-                <div class="flex flex-wrap gap-2 mt-3 justify-center max-h-24 overflow-y-auto">
-                    ${names.map(n => `<span class="text-base bg-brand-accent/10 text-brand-accent/70 px-3 py-1 rounded-full font-semibold">${n}</span>`).join('')}
-                </div>`;
-        }
-    }
-
-    // Notes / Announcements (shown below topics)
-    if (entry.notes) {
-        const notesEl = document.getElementById('tile-notes');
-        notesEl.classList.remove('hidden');
-        notesEl.innerHTML = `
-            <div class="flex items-center gap-2 text-amber-400/70 text-base font-bold uppercase tracking-wider mb-2">
-                <i class="bi bi-megaphone-fill"></i> Notes
+// ─── KPI tiles ───────────────────────────────────────────────
+const state = { commits: 418, submissions: 63, quizAnswers: 1240, help: 4 };
+const KPIS = [
+    { key:'commits',     kind:'commit', label:'Commits this week', icon:'bi-git',                 c:'#10b981', sub:'+18% on last week' },
+    { key:'submissions', kind:'submit', label:'Assessments in',    icon:'bi-cloud-arrow-up-fill', c:'#8b5cf6', sub:'across 4 assessments' },
+    { key:'quizAnswers', kind:'quiz',   label:'Quiz answers',      icon:'bi-patch-question-fill', c:'#f59e0b', sub:'this term' },
+    { key:'help',        kind:'help',   label:'Open help tickets', icon:'bi-life-preserver',      c:'#ec4899', sub:'avg. reply 6 min' },
+];
+$('kpis').innerHTML = KPIS.map((k,i) => `
+    <div class="card rise flex flex-col justify-between" style="animation-delay:${i*.05}s">
+        <div class="glow" style="background:${k.c};opacity:.18"></div>
+        <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold text-white/50">${k.label}</span>
+            <span class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:${k.c}22;color:${k.c}"><i class="bi ${k.icon}"></i></span>
+        </div>
+        <div class="flex items-end justify-between gap-3 mt-3">
+            <div>
+                <div class="text-4xl lg:text-5xl font-black mono" style="color:${k.c}" id="kpi-${k.key}">0</div>
+                <div class="text-xs text-white/35 mt-1">${k.sub}</div>
             </div>
-            <div class="text-xl font-semibold text-white/60 leading-relaxed">${entry.notes}</div>`;
-    }
-
-    // Trainer override (if different from config)
-    if (entry.trainer && entry.trainer !== CONFIG.trainer) {
-        document.getElementById('tile-trainer-name').textContent = entry.trainer;
-    }
+            <canvas id="spark-${k.key}" width="240" height="80" class="w-28 h-10 hidden sm:block"></canvas>
+        </div>
+    </div>`).join('');
+KPIS.forEach(k => { k.spark = Array.from({length:16},()=>rnd(2,10)); });
+function drawSpark(k){
+    const c = $('spark-'+k.key), x = c.getContext('2d'), w = c.width, h = c.height, d = k.spark, mx = Math.max(...d), mn = Math.min(...d);
+    x.clearRect(0,0,w,h); x.beginPath();
+    d.forEach((v,i) => { const px = i/(d.length-1)*w, py = h-6-((v-mn)/(mx-mn||1))*(h-12); i ? x.lineTo(px,py) : x.moveTo(px,py); });
+    x.strokeStyle = k.c; x.lineWidth = 4; x.lineJoin = 'round'; x.stroke();
+    x.lineTo(w,h); x.lineTo(0,h); x.closePath(); x.fillStyle = k.c+'22'; x.fill();
 }
+function renderKpis(){ KPIS.forEach(k => { countUp('kpi-'+k.key, state[k.key]); drawSpark(k); }); }
 
-// ═══════════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════════
-renderClassBadge();
-renderProgress();
-loadFromSheet();
+// ─── Today's topics (sample) ─────────────────────────────────
+const TOPICS = [
+    { t:'Express routing & middleware', d:'Build a REST API for the Riz Quiz scores', time:'9:30',  icon:'bi-diagram-3' },
+    { t:'MongoDB with Mongoose',        d:'Schemas, models and CRUD in Atlas',        time:'11:15', icon:'bi-database' },
+    { t:'Auth with JWT',                d:'Protect routes and store tokens safely',   time:'1:30',  icon:'bi-shield-lock' },
+    { t:'Assessment 2 workshop',        d:'Bring your questions for 1:1 help',        time:'3:00',  icon:'bi-clipboard-check' },
+];
+$('topics').innerHTML = TOPICS.map((x,i) => `
+    <li class="flex items-start gap-3 rounded-xl p-3 ${i===1?'bg-cyan-500/10 border border-cyan-500/25':'bg-white/[.025] border border-transparent'}">
+        <span class="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center text-cyan-300 shrink-0"><i class="bi ${x.icon}"></i></span>
+        <div class="flex-1 min-w-0">
+            <div class="font-bold text-white/90 leading-snug">${x.t} ${i===1?'<span class="tag tag-live ml-1 align-middle">Now</span>':''}</div>
+            <div class="text-xs text-white/40">${x.d}</div>
+        </div>
+        <span class="mono text-xs text-white/35">${x.time}</span>
+    </li>`).join('');
 
-// Auto-refresh from sheet
-if (CONFIG.sheetUrl && CONFIG.refreshSecs > 0) {
-    setInterval(loadFromSheet, CONFIG.refreshSecs * 1000);
+// ─── Attendance (sample) ─────────────────────────────────────
+const attendance = CONFIG.students.map((n,i) => ({ name:n, present: !['Neil','Tom'].includes(n), time:`9:${String(5+i*3).padStart(2,'0')}` }));
+function renderAttendance(){
+    const here = attendance.filter(a => a.present).length;
+    countUp('att-count', here);
+    $('att-bar').style.width = (here/attendance.length*100)+'%';
+    $('attendance').innerHTML = attendance.map(a => `
+        <div class="flex items-center gap-2 rounded-xl px-2 py-2 ${a.present?'bg-emerald-500/[.07]':'bg-white/[.02] opacity-50'}">
+            ${avatar(a.name, 28)}
+            <div class="leading-tight min-w-0"><div class="text-sm font-bold truncate">${a.name}</div>
+            <div class="text-[10px] ${a.present?'text-emerald-300/80':'text-white/30'}">${a.present ? 'in '+a.time : 'not yet'}</div></div>
+        </div>`).join('');
 }
+renderAttendance();
+const present = () => attendance.filter(a => a.present).map(a => a.name);
 
-// Midnight reset
-setInterval(() => {
-    const n = new Date();
-    if (n.getHours() === 0 && n.getMinutes() === 0 && n.getSeconds() < 2) {
-        renderClassBadge();
-        renderProgress();
-        loadFromSheet();
-    }
-}, 1000);
-
-// ═══════════════════════════════════════════════════════════════
-// FIREBASE — Riz Quiz Leaderboard
-// ═══════════════════════════════════════════════════════════════
-if (CONFIG.firebase && CONFIG.firebase.apiKey) {
-    firebase.initializeApp(CONFIG.firebase);
-    const db = firebase.database();
-
-    // Seed default scores (won't overwrite if already present)
-    db.ref('leaderboard').once('value', snap => {
-        if (!snap.exists()) {
-            db.ref('leaderboard').set({ Wally:6, Selvi:4, Clare:3, Joey:2, Jarrahd:2, Alex:1 });
-        }
+// ─── Riz Quiz leaderboard (mock, animated re-ordering) ───────
+const START = [42,38,35,33,31,27,24,22,19];
+const scores = Object.fromEntries(CONFIG.students.map((n,i) => [n, START[i] ?? 10]));
+const ROW_H = 40, medals = ['🥇','🥈','🥉'], lb = $('leaderboard');
+lb.style.height = (CONFIG.students.length*ROW_H) + 'px';
+CONFIG.students.forEach(n => {
+    const row = document.createElement('div');
+    row.className = 'lb-row absolute left-0 right-0 flex items-center gap-3 px-3 rounded-xl';
+    row.style.height = (ROW_H-4)+'px'; row.style.background = 'rgba(255,255,255,.025)';
+    row.id = 'lb-'+n;
+    row.innerHTML = `<span class="w-6 text-center font-black text-white/40 text-lg" data-rank></span>${avatar(n,26)}
+        <span class="flex-1 font-bold text-white/85">${n}</span>
+        <span class="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden hidden sm:block"><span data-bar class="block h-full rounded-full transition-all duration-700" style="background:${color(n)}"></span></span>
+        <span class="mono font-black text-amber-300 w-10 text-right" data-score></span>`;
+    lb.appendChild(row);
+});
+function renderLeaderboard(bumped){
+    const order = [...CONFIG.students].sort((a,b) => scores[b]-scores[a]);
+    const top = scores[order[0]];
+    order.forEach((n,i) => {
+        const r = $('lb-'+n);
+        r.style.transform = `translateY(${i*ROW_H}px)`;
+        const rk = r.querySelector('[data-rank]'); rk.textContent = i < 3 ? medals[i] : i+1; rk.style.opacity = i < 3 ? '1' : '';
+        r.querySelector('[data-score]').textContent = scores[n];
+        r.querySelector('[data-bar]').style.width = (scores[n]/top*100)+'%';
+        r.style.border = i === 0 ? '1px solid rgba(251,191,36,.35)' : '1px solid transparent';
+        if (n === bumped) { r.classList.remove('bump'); void r.offsetWidth; r.classList.add('bump'); }
     });
-
-    // Live leaderboard listener
-    db.ref('leaderboard').on('value', snap => {
-        const scores = snap.val() || {};
-        const sorted = Object.entries(scores).sort((a,b) => b[1] - a[1]);
-        const medals = ['🥇','🥈','🥉'];
-        const container = document.getElementById('tile-quiz');
-
-        if (!sorted.length) {
-            container.innerHTML = `<div class="text-center text-white/20 text-xl">No scores yet</div>`;
-            return;
-        }
-
-        container.innerHTML = sorted.map(([name, pts], i) => {
-            const medal = i < 3 ? medals[i] : `<span class="text-white/20 font-bold w-8 inline-block text-right">${i+1}.</span>`;
-            const bar = sorted[0][1] > 0 ? Math.round(pts / sorted[0][1] * 100) : 0;
-            const colors = i === 0 ? 'from-amber-500 to-yellow-400' : i === 1 ? 'from-gray-300 to-gray-400' : i === 2 ? 'from-amber-700 to-amber-600' : 'from-white/10 to-white/5';
-            return `<div class="flex items-center gap-3 py-1.5 fade-in" style="animation-delay:${i*60}ms">
-                <span class="text-xl w-8 text-center ${i >= 3 ? 'text-white/20 font-bold' : ''}">${i < 3 ? medals[i] : i+1}</span>
-                <span class="text-lg font-bold text-white/80 w-24">${name}</span>
-                <div class="flex-1 h-4 bg-white/5 rounded-full overflow-hidden">
-                    <div class="h-full rounded-full bg-gradient-to-r ${colors} transition-all duration-700" style="width:${bar}%"></div>
-                </div>
-                <span class="text-lg font-black mono text-white/50 w-10 text-right">${pts}</span>
-            </div>`;
-        }).join('');
-    });
 }
+function floatPoints(name, pts){
+    const f = document.createElement('span');
+    f.className = 'float-pts'; f.textContent = '+'+pts; $('lb-'+name).appendChild(f);
+    setTimeout(() => f.remove(), 1000);
+}
+let qNo = 7, qSecs = 20;
+function quizTimer(){
+    qSecs--;
+    if (qSecs < 0) { qSecs = 20; qNo = qNo % 10 + 1; }
+    $('quiz-q').textContent = `Question ${qNo} of 10`;
+    $('quiz-timer').textContent = `0:${String(qSecs).padStart(2,'0')}`;
+    $('quiz-bar').style.width = (qSecs/20*100)+'%';
+}
+renderLeaderboard(); quizTimer(); setInterval(quizTimer, 1000);
+
+// ─── Activity chart ──────────────────────────────────────────
+Chart.defaults.color = 'rgba(255,255,255,.45)';
+Chart.defaults.borderColor = 'rgba(255,255,255,.05)';
+Chart.defaults.font.family = 'Inter';
+const mins = Array.from({length:30},(_,i)=>`-${29-i}m`);
+const lineChart = new Chart($('lineChart'), {
+    type:'line',
+    data:{ labels:mins, datasets:[
+        { label:'Commits',      data:mins.map(()=>rnd(2,9)), borderColor:'#10b981', backgroundColor:'rgba(16,185,129,.14)', fill:true, tension:.4, pointRadius:0, borderWidth:2 },
+        { label:'Quiz answers', data:mins.map(()=>rnd(0,7)), borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,.08)', fill:true, tension:.4, pointRadius:0, borderWidth:2 },
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false, animation:{duration:700},
+        plugins:{ legend:{ position:'bottom', labels:{ boxWidth:8, usePointStyle:true } } },
+        scales:{ x:{ ticks:{ maxTicksLimit:6 } }, y:{ beginAtZero:true, ticks:{ maxTicksLimit:5 } } } }
+});
+
+// ─── Unit progress ───────────────────────────────────────────
+const UNITS = [['ICTPRG547','Advanced programming',94],['ICTPRG556','MVC frameworks',81],['ICTWEB513','Dynamic web apps',66],['ICTDBS504','Databases',52],['ICTPRG554','Data structures',28],['ICTSAS527','Security',9]];
+const UC = ['#ec4899','#d946ef','#a855f7','#8b5cf6','#6366f1','#3b82f6'];
+function renderUnits(){
+    $('units').innerHTML = UNITS.map((u,i) => `
+        <div>
+            <div class="flex justify-between text-xs mb-1"><span class="font-bold text-white/75">${u[0]} <span class="font-normal text-white/35">${u[1]}</span></span><span class="mono text-white/50">${u[2]}%</span></div>
+            <div class="h-2 bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full transition-all duration-700" style="width:${u[2]}%;background:${UC[i]}"></div></div>
+        </div>`).join('');
+}
+renderUnits();
+
+// ─── Activity feed ───────────────────────────────────────────
+const ACTIONS = [
+    { t:'pushed to',           x:['quiz-api','express-routes','mongo-lab','auth-demo'],                 icon:'bi-git',                 c:'text-emerald-400', kind:'commit' },
+    { t:'submitted',           x:['Assessment 2 — REST API','Lab 5 — Mongoose','Project milestone 1'], icon:'bi-cloud-arrow-up-fill', c:'text-purple-400',  kind:'submit' },
+    { t:'scored in Riz Quiz',  x:['+1','+2','+3'],                                                      icon:'bi-trophy-fill',         c:'text-amber-400',   kind:'quiz' },
+    { t:'asked for help with', x:['CORS errors','JWT auth','async/await','npm install'],                icon:'bi-life-preserver',      c:'text-pink-400',    kind:'help' },
+];
+const feed = [];
+function ago(d){ const s = Math.round((Date.now()-d)/1000); return s < 60 ? `${s}s` : `${Math.round(s/60)}m`; }
+function renderFeed(){
+    $('feed').innerHTML = feed.slice(0,6).map((e,i) => `
+        <li class="flex items-center gap-3 bg-white/[.025] rounded-xl px-3 py-2 ${i===0?'feed-in':''}">
+            ${avatar(e.who,26)}
+            <div class="flex-1 text-sm leading-snug min-w-0"><span class="font-bold text-white/90">${e.who}</span> <span class="text-white/45">${e.a.t}</span> <span class="text-white/80">${e.x}</span></div>
+            <i class="bi ${e.a.icon} ${e.a.c}"></i>
+            <span class="text-[10px] text-white/30 mono w-7 text-right">${ago(e.at)}</span>
+        </li>`).join('');
+    $('feed-updated').textContent = new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+for (let i = 0; i < 6; i++) { const a = pick(ACTIONS); feed.push({ who:pick(present()), a, x:pick(a.x), at:new Date(Date.now()-i*53000) }); }
+
+// ─── tick: move all the mock data ────────────────────────────
+function tick(){
+    const a = Math.random() < .4 ? ACTIONS[2] : pick(ACTIONS);
+    const who = pick(present());
+    const e = { who, a, x:pick(a.x), at:new Date() };
+    feed.unshift(e); if (feed.length > 20) feed.pop();
+
+    if (a.kind === 'quiz') { const pts = Number(e.x); scores[who] += pts; floatPoints(who, pts); renderLeaderboard(who); state.quizAnswers++; }
+    if (a.kind === 'commit') state.commits += rnd(1,3);
+    if (a.kind === 'submit') state.submissions++;
+    if (a.kind === 'help') state.help++;
+    if (Math.random() < .25 && state.help > 1) state.help--;
+    KPIS.forEach(k => { k.spark.push(k.kind === a.kind ? rnd(8,12) : rnd(2,8)); k.spark.shift(); });
+
+    // a late arrival now and then
+    const late = attendance.find(x => !x.present);
+    if (late && Math.random() < .12) {
+        late.present = true;
+        late.time = new Date().toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'}).replace(/\s?[ap]m/i,'');
+        renderAttendance();
+    }
+
+    lineChart.data.datasets[0].data.push(a.kind==='commit'?rnd(6,11):rnd(2,8)); lineChart.data.datasets[0].data.shift();
+    lineChart.data.datasets[1].data.push(a.kind==='quiz'?rnd(5,9):rnd(0,5));    lineChart.data.datasets[1].data.shift();
+    lineChart.update();
+
+    if (Math.random() < .3) { const u = UNITS[rnd(2,5)]; u[2] = Math.min(100, u[2]+1); renderUnits(); }
+    renderKpis(); renderFeed();
+}
+renderKpis(); renderFeed();
+setInterval(tick, CONFIG.tickMs);
 </script>
 </body>
 </html>
