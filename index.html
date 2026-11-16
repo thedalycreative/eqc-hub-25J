@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intake 26B | Equinim College</title>
+    <title>Intake 25J | Equinim College</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -21,14 +21,14 @@
         .fade-in{animation:fi .5s ease-out;}@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
     </style>
 </head>
-<body class="bg-brand-deeper text-white h-screen overflow-hidden flex flex-col">
+<body class="bg-brand-deeper text-white min-h-screen lg:h-screen lg:overflow-hidden flex flex-col">
 
 <!-- ╔══════════════════════════════════════════════════════╗ -->
 <!-- ║  CONFIG — Change these for each intake              ║ -->
 <!-- ╚══════════════════════════════════════════════════════╝ -->
 <script>
 const CONFIG = {
-    intake:       '26B',
+    intake:       '25J',
     course:       'Diploma of IT — Back End Web Development',
     college:      'Equinim College',
     room:         'Room 1',
@@ -58,31 +58,33 @@ const CONFIG = {
 </script>
 
 <!-- NAVBAR -->
-<nav class="flex items-center justify-between px-6 border-b border-white/5 shrink-0 bg-brand-dark/60" style="height:80px;">
+<nav class="flex flex-wrap items-center justify-between gap-3 px-4 lg:px-6 py-3 border-b border-white/5 shrink-0 bg-brand-dark/60" style="min-height:80px;">
     <div class="flex items-center gap-5">
-        <span class="text-5xl font-black grad-text tracking-tight leading-none" id="nav-intake">26B</span>
-        <div class="h-12 w-px bg-white/10"></div>
-        <span class="text-2xl font-bold text-white/70" id="nav-college">Equinim College</span>
-        <span class="text-white/15 text-2xl">·</span>
-        <span class="text-xl text-white/40 flex items-center gap-2"><i class="bi bi-mortarboard-fill"></i> <span id="nav-course-short">Diploma of IT</span></span>
+        <span class="text-5xl font-black grad-text tracking-tight leading-none" id="nav-intake">25J</span>
+        <div class="hidden lg:block h-12 w-px bg-white/10"></div>
+        <span class="hidden sm:inline text-xl font-bold text-white/70" id="nav-college">Equinim College</span>
+        <span class="hidden 2xl:inline text-white/15 text-2xl">·</span>
+        <span class="hidden 2xl:flex text-lg text-white/40 items-center gap-2"><i class="bi bi-mortarboard-fill"></i> <span id="nav-course-short">Diploma of IT</span></span>
     </div>
-    <div class="flex items-center gap-5">
-        <div class="flex items-center gap-2 text-xl text-white/40"><i class="bi bi-door-open-fill"></i><span class="font-semibold" id="nav-room">Room 1</span></div>
-        <div class="h-12 w-px bg-white/10"></div>
+    <div class="flex flex-wrap items-center gap-3 lg:gap-5">
+        <a href="dashboard.html" class="flex items-center gap-2 text-lg font-bold text-brand-accent bg-brand-accent/10 border border-brand-accent/30 rounded-xl px-4 py-2 hover:bg-brand-accent/20 transition"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <div class="hidden lg:block h-12 w-px bg-white/10"></div>
+        <div class="hidden lg:flex items-center gap-2 text-xl text-white/40"><i class="bi bi-door-open-fill"></i><span class="font-semibold" id="nav-room">Room 1</span></div>
+        <div class="hidden lg:block h-12 w-px bg-white/10"></div>
         <div id="class-badge"></div>
-        <div class="h-12 w-px bg-white/10"></div>
-        <div class="flex items-center gap-2 text-xl mono text-white/50" id="header-clock"></div>
-        <div class="h-12 w-px bg-white/10"></div>
+        <div class="hidden lg:block h-12 w-px bg-white/10"></div>
+        <div class="hidden xl:flex items-center gap-2 text-lg mono text-white/50" id="header-clock"></div>
+        <div class="hidden lg:block h-12 w-px bg-white/10"></div>
         <div class="flex items-center gap-3" id="nav-trainer"></div>
     </div>
 </nav>
 
 <!-- 6-TILE GRID -->
-<main class="grid gap-3 p-3 flex-1 min-h-0" style="grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;">
+<main class="grid gap-3 p-3 flex-1 min-h-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2">
 
     <!-- TILE 1: INTAKE + COURSE (big hero) -->
     <div class="card items-center justify-center text-center" style="border-color:rgba(16,185,129,0.15);">
-        <div class="text-[10rem] font-black grad-text leading-none tracking-tighter" id="tile-intake">26B</div>
+        <div class="font-black grad-text leading-none tracking-tighter" style="font-size:clamp(5rem,11vw,10rem)" id="tile-intake">25J</div>
         <div class="text-2xl font-bold text-white/40 mt-2" id="tile-course">Diploma of IT — Back End Web Development</div>
     </div>
 
@@ -95,7 +97,7 @@ const CONFIG = {
     </div>
 
     <!-- TILE 3: TODAY'S TOPICS + NOTES -->
-    <div class="card" style="border-color:rgba(139,92,246,0.12);">
+    <div class="card min-h-[260px]" style="border-color:rgba(139,92,246,0.12);">
         <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-3 mb-4 shrink-0">
             <i class="bi bi-journal-text text-purple-400"></i> Today's Topics
         </h2>
@@ -111,18 +113,18 @@ const CONFIG = {
     </div>
 
     <!-- TILE 4: ATTENDANCE -->
-    <div class="card" style="border-color:rgba(16,185,129,0.1);">
+    <div class="card min-h-[260px]" style="border-color:rgba(16,185,129,0.1);">
         <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-3 mb-4 shrink-0">
             <i class="bi bi-people-fill text-brand-accent"></i> Attendance
         </h2>
         <div class="flex-1 flex flex-col justify-center items-center" id="tile-attendance">
-            <div class="text-[6rem] font-black text-brand-accent leading-none" id="att-count">—</div>
+            <div class="font-black text-brand-accent leading-none" style="font-size:clamp(4rem,7vw,6rem)" id="att-count">—</div>
             <div class="text-2xl text-white/30 font-bold mt-2">present today</div>
         </div>
     </div>
 
     <!-- TILE 5: RIZ QUIZ -->
-    <div class="card" style="border-color:rgba(245,158,11,0.15);">
+    <div class="card min-h-[260px]" style="border-color:rgba(245,158,11,0.15);">
         <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-3 mb-4 shrink-0">
             <i class="bi bi-trophy-fill text-amber-400"></i> Riz Quiz
         </h2>
@@ -135,7 +137,7 @@ const CONFIG = {
     </div>
 
     <!-- TILE 6: COURSE PROGRESS -->
-    <div class="card" style="border-color:rgba(236,72,153,0.1);">
+    <div class="card min-h-[260px]" style="border-color:rgba(236,72,153,0.1);">
         <h2 class="text-2xl font-extrabold text-white/90 flex items-center gap-3 mb-4 shrink-0">
             <i class="bi bi-bar-chart-fill text-pink-400"></i> Course Progress
         </h2>
@@ -194,8 +196,6 @@ function updateClock() {
     const s = String(n.getSeconds()).padStart(2,'0');
     const d = n.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
     document.getElementById('header-clock').innerHTML =
-        `<i class="bi bi-calendar3 text-white/25"></i><span class="text-white/40">${d}</span>` +
-        `<span class="text-white/10 mx-1">|</span>` +
         `<i class="bi bi-clock text-white/25"></i><span class="text-lg font-semibold">${h}<span class="blink">:</span>${m}<span class="blink">:</span>${s}</span>`;
     document.getElementById('tile-date').textContent = d;
 }
@@ -421,8 +421,7 @@ if (CONFIG.firebase && CONFIG.firebase.apiKey) {
             const bar = sorted[0][1] > 0 ? Math.round(pts / sorted[0][1] * 100) : 0;
             const colors = i === 0 ? 'from-amber-500 to-yellow-400' : i === 1 ? 'from-gray-300 to-gray-400' : i === 2 ? 'from-amber-700 to-amber-600' : 'from-white/10 to-white/5';
             return `<div class="flex items-center gap-3 py-1.5 fade-in" style="animation-delay:${i*60}ms">
-                <span class="text-xl w-8 text-center">${typeof medal === 'string' && medal.startsWith('🥇') || medal.startsWith('🥈') || medal.startsWith('🥉') ? medal : ''}</span>
-                ${i >= 3 ? `<span class="text-lg text-white/20 font-bold w-8 text-center">${i+1}</span>` : ''}
+                <span class="text-xl w-8 text-center ${i >= 3 ? 'text-white/20 font-bold' : ''}">${i < 3 ? medals[i] : i+1}</span>
                 <span class="text-lg font-bold text-white/80 w-24">${name}</span>
                 <div class="flex-1 h-4 bg-white/5 rounded-full overflow-hidden">
                     <div class="h-full rounded-full bg-gradient-to-r ${colors} transition-all duration-700" style="width:${bar}%"></div>

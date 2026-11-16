@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Dashboard | Intake 25J | Equinim College</title>
+    <meta name="description" content="Live class dashboard for Intake 25J: attendance, submissions, quiz activity and a recent-activity feed (demo data).">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>tailwind.config={theme:{extend:{colors:{brand:{dark:'#0f172a',deeper:'#020617',mid:'#1e293b',accent:'#10b981',accent2:'#06b6d4',warn:'#f59e0b',purple:'#8b5cf6'}},fontFamily:{sans:['Inter','system-ui','sans-serif'],mono:['JetBrains Mono','monospace']}}}}</script>
+    <style>
+        body{font-family:'Inter',system-ui,sans-serif;}
+        .mono{font-family:'JetBrains Mono',monospace;}
+        .grad-text{background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .card{background:#0f172a;border-radius:16px;border:1px solid rgba(255,255,255,0.06);padding:20px;}
+        .pulse-dot{animation:pd 1.6s ease-in-out infinite;}@keyframes pd{0%,100%{opacity:.35}50%{opacity:1}}
+        .feed-in{animation:fi .45s ease-out;}@keyframes fi{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+        .flash{animation:fl .8s ease-out;}@keyframes fl{from{color:#fff}to{}}
+    </style>
+</head>
+<body class="bg-brand-deeper text-white min-h-screen">
+
+<nav class="flex flex-wrap items-center justify-between gap-3 px-4 lg:px-6 py-4 border-b border-white/5 bg-brand-dark/60">
+    <div class="flex items-center gap-4">
+        <a href="index.html" class="text-4xl font-black grad-text tracking-tight leading-none">25J</a>
+        <div class="h-10 w-px bg-white/10"></div>
+        <div>
+            <div class="text-xl font-bold text-white/80">Live Class Dashboard</div>
+            <div class="text-sm text-white/40">Equinim College · Diploma of IT — Back End Web Development</div>
+        </div>
+    </div>
+    <div class="flex items-center gap-4">
+        <span class="flex items-center gap-2 text-sm font-bold text-brand-accent bg-brand-accent/10 border border-brand-accent/30 rounded-full px-3 py-1">
+            <span class="w-2 h-2 rounded-full bg-brand-accent pulse-dot"></span> LIVE
+        </span>
+        <span class="mono text-white/50" id="clock"></span>
+        <a href="index.html" class="text-sm font-semibold text-white/60 hover:text-white border border-white/10 rounded-xl px-3 py-2"><i class="bi bi-grid-3x2-gap"></i> Class Hub</a>
+    </div>
+</nav>
+
+<main class="p-4 lg:p-6 space-y-4 max-w-[1600px] mx-auto">
+    <!-- KPI COUNTERS -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="kpis"></section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="card lg:col-span-2">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-lg font-extrabold text-white/90 flex items-center gap-2"><i class="bi bi-graph-up-arrow text-brand-accent2"></i> Activity — last 30 minutes</h2>
+                <span class="text-xs text-white/30 mono">events / min</span>
+            </div>
+            <div class="h-64"><canvas id="lineChart"></canvas></div>
+        </div>
+        <div class="card">
+            <h2 class="text-lg font-extrabold text-white/90 flex items-center gap-2 mb-3"><i class="bi bi-pie-chart-fill text-brand-purple"></i> Assessment status</h2>
+            <div class="h-64"><canvas id="doughnutChart"></canvas></div>
+        </div>
+    </section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="card lg:col-span-2">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-lg font-extrabold text-white/90 flex items-center gap-2"><i class="bi bi-bar-chart-fill text-pink-400"></i> Unit progress</h2>
+                <span class="text-xs text-white/30">% of cohort competent</span>
+            </div>
+            <div class="h-64"><canvas id="barChart"></canvas></div>
+        </div>
+        <div class="card flex flex-col">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-lg font-extrabold text-white/90 flex items-center gap-2"><i class="bi bi-lightning-charge-fill text-amber-400"></i> Recent activity</h2>
+                <span class="text-xs text-white/30" id="feed-updated"></span>
+            </div>
+            <ul class="space-y-2 flex-1 overflow-hidden" id="feed" style="max-height:16rem"></ul>
+        </div>
+    </section>
+
+    <p class="text-center text-xs text-white/25 pt-2">Demo dashboard — all figures are generated mock data and refresh every few seconds.</p>
+</main>
+
+<script>
+// ─── Mock data model ─────────────────────────────────────────────
+const STUDENTS = ['Ava','Noah','Mia','Leo','Isla','Kai','Zara','Finn','Ruby','Eli','Maya','Jack','Nora','Oscar','Lily','Theo','Ivy','Sam'];
+const ACTIONS = [
+    {t:'pushed a commit to', target:['todo-api','express-routes','mongo-lab','auth-demo'], icon:'bi-git', color:'text-brand-accent'},
+    {t:'submitted', target:['Assessment 2 — REST API','Lab 5 — Mongoose','Quiz — HTTP verbs','Project milestone 1'], icon:'bi-cloud-arrow-up-fill', color:'text-brand-accent2'},
+    {t:'scored in Riz Quiz:', target:['+1 pt','+2 pts','+3 pts'], icon:'bi-trophy-fill', color:'text-amber-400'},
+    {t:'checked in to', target:['Room 1','the Zoom room'], icon:'bi-person-check-fill', color:'text-emerald-300'},
+    {t:'opened a help ticket on', target:['CORS errors','JWT auth','npm install','async/await'], icon:'bi-life-preserver', color:'text-pink-400'},
+];
+const rnd = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+const pick = arr => arr[rnd(0,arr.length-1)];
+
+const state = {
+    present: 15, enrolled: 18,
+    commits: 342, submissions: 87, quizPts: 214,
+};
+const KPIS = [
+    {key:'present', label:'Present today', icon:'bi-people-fill', color:'text-brand-accent', suffix:'', sub:() => `of ${state.enrolled} enrolled`},
+    {key:'commits', label:'Commits this week', icon:'bi-git', color:'text-brand-accent2', suffix:'', sub:() => '+12% vs last week'},
+    {key:'submissions', label:'Submissions', icon:'bi-cloud-arrow-up-fill', color:'text-brand-purple', suffix:'', sub:() => 'across 4 assessments'},
+    {key:'quizPts', label:'Riz Quiz points', icon:'bi-trophy-fill', color:'text-amber-400', suffix:'', sub:() => 'class total'},
+];
+
+// ─── KPI counters (animated) ─────────────────────────────────────
+const shown = {};
+function renderKpiShells(){
+    document.getElementById('kpis').innerHTML = KPIS.map(k => `
+        <div class="card">
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-semibold text-white/50">${k.label}</span>
+                <i class="bi ${k.icon} ${k.color} text-xl"></i>
+            </div>
+            <div class="text-4xl lg:text-5xl font-black mt-2 mono ${k.color}" id="kpi-${k.key}">0</div>
+            <div class="text-xs text-white/30 mt-1" id="kpi-sub-${k.key}"></div>
+        </div>`).join('');
+}
+function animateTo(key, target, ms=900){
+    const el = document.getElementById('kpi-'+key);
+    const from = shown[key] ?? 0, t0 = performance.now();
+    function step(now){
+        const p = Math.min(1,(now-t0)/ms), e = 1-Math.pow(1-p,3);
+        el.textContent = Math.round(from + (target-from)*e).toLocaleString('en-AU');
+        if (p<1) requestAnimationFrame(step); else shown[key]=target;
+    }
+    requestAnimationFrame(step);
+}
+function updateKpis(){
+    KPIS.forEach(k => { animateTo(k.key, state[k.key]); document.getElementById('kpi-sub-'+k.key).textContent = k.sub(); });
+}
+
+// ─── Charts ─────────────────────────────────────────────────────
+Chart.defaults.color = 'rgba(255,255,255,0.45)';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.font.family = 'Inter';
+const minutes = Array.from({length:30},(_,i)=>`-${29-i}m`);
+const lineChart = new Chart(document.getElementById('lineChart'), {
+    type:'line',
+    data:{labels:minutes, datasets:[
+        {label:'Commits', data:minutes.map(()=>rnd(2,9)), borderColor:'#10b981', backgroundColor:'rgba(16,185,129,0.12)', fill:true, tension:.35, pointRadius:0},
+        {label:'Quiz answers', data:minutes.map(()=>rnd(0,6)), borderColor:'#06b6d4', backgroundColor:'rgba(6,182,212,0.08)', fill:true, tension:.35, pointRadius:0},
+    ]},
+    options:{responsive:true, maintainAspectRatio:false, animation:{duration:600}, plugins:{legend:{position:'bottom', labels:{boxWidth:10}}}, scales:{y:{beginAtZero:true}}}
+});
+const doughnutChart = new Chart(document.getElementById('doughnutChart'), {
+    type:'doughnut',
+    data:{labels:['Competent','Submitted — marking','In progress','Not started'], datasets:[{data:[46,21,23,10], backgroundColor:['#10b981','#06b6d4','#8b5cf6','#334155'], borderWidth:0}]},
+    options:{responsive:true, maintainAspectRatio:false, cutout:'68%', plugins:{legend:{position:'bottom', labels:{boxWidth:10}}}}
+});
+const UNITS = ['ICTPRG547','ICTPRG556','ICTWEB513','ICTDBS504','ICTPRG554','ICTSAS527'];
+const barChart = new Chart(document.getElementById('barChart'), {
+    type:'bar',
+    data:{labels:UNITS, datasets:[{label:'% competent', data:[94,81,66,52,28,9], backgroundColor:['#ec4899','#d946ef','#a855f7','#8b5cf6','#6366f1','#3b82f6'], borderRadius:8}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, max:100}}}
+});
+
+// ─── Activity feed ──────────────────────────────────────────────
+const feed = [];
+function newEvent(){
+    const a = pick(ACTIONS);
+    return {who:pick(STUDENTS), a, target:pick(a.target), at:new Date()};
+}
+function ago(d){ const s=Math.round((Date.now()-d)/1000); return s<60?`${s}s ago`:`${Math.round(s/60)}m ago`; }
+function renderFeed(){
+    document.getElementById('feed').innerHTML = feed.slice(0,7).map((e,i)=>`
+        <li class="flex items-start gap-3 bg-white/[0.02] rounded-xl px-3 py-2 ${i===0?'feed-in':''}">
+            <i class="bi ${e.a.icon} ${e.a.color} text-lg mt-0.5"></i>
+            <div class="flex-1 text-sm leading-snug"><span class="font-bold text-white/90">${e.who}</span> <span class="text-white/50">${e.a.t}</span> <span class="text-white/80">${e.target}</span></div>
+            <span class="text-[11px] text-white/30 mono whitespace-nowrap">${ago(e.at)}</span>
+        </li>`).join('');
+    document.getElementById('feed-updated').textContent = 'updated ' + new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+// ─── Tick: mutate mock data on a timer ──────────────────────────
+function tick(){
+    const e = newEvent();
+    feed.unshift(e); if (feed.length>20) feed.pop();
+    if (e.a.icon==='bi-git') state.commits += rnd(1,3);
+    if (e.a.icon==='bi-cloud-arrow-up-fill') state.submissions += 1;
+    if (e.a.icon==='bi-trophy-fill') state.quizPts += rnd(1,3);
+    if (e.a.icon==='bi-person-check-fill') state.present = Math.min(state.enrolled, state.present+1);
+    if (Math.random()<0.1) state.present = Math.max(10, state.present-1);
+    updateKpis(); renderFeed();
+
+    lineChart.data.datasets[0].data.push(rnd(2,10)); lineChart.data.datasets[0].data.shift();
+    lineChart.data.datasets[1].data.push(rnd(0,7));  lineChart.data.datasets[1].data.shift();
+    lineChart.update();
+
+    const d = doughnutChart.data.datasets[0].data;
+    if (d[2]>0 && Math.random()<0.5){ d[2]--; d[1]++; } else if (d[1]>0){ d[1]--; d[0]++; }
+    doughnutChart.update();
+
+    const b = barChart.data.datasets[0].data;
+    const i = rnd(2,5); b[i] = Math.min(100, b[i]+rnd(0,2));
+    barChart.update();
+}
+
+function clock(){ document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-AU'); }
+
+renderKpiShells();
+for (let i=0;i<6;i++){ const e=newEvent(); e.at=new Date(Date.now()-i*47000); feed.push(e); }
+updateKpis(); renderFeed(); clock();
+setInterval(clock, 1000);
+setInterval(tick, 3500);
+</script>
+</body>
+</html>
